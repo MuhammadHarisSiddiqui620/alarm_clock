@@ -1,3 +1,4 @@
+import 'package:alarm_clock/components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 
 import '../components/Reusable_Alarm.dart';
@@ -15,14 +16,7 @@ class _DayScreenState extends State<DayScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Center(
-            child: Text(
-              'Day',
-              style: appBarStyle,
-            ),
-          ),
-        ),
+        appBar: CustomAppBar(title: 'Day'), // Use the custom AppBar
         body: ListView(
           children: [
             Padding(

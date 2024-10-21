@@ -15,8 +15,10 @@ class _SwitchStateState extends State<SwitchState> {
     return Switch(
       // This bool value toggles the switch.
       value: light,
-      activeColor: Colors.grey[300],
-      inactiveTrackColor: Colors.white,
+      activeColor: Color(0xFF31489A),
+      inactiveTrackColor: Colors.grey,
+      trackOutlineColor: MaterialStateProperty.all(Colors.grey[300]),
+      thumbColor: MaterialStateProperty.all(Colors.white),
       onChanged: (bool value) {
         // This is called when the user toggles the switch.
         setState(() {

@@ -1,3 +1,4 @@
+import 'package:alarm_clock/components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 
 class AlarmScreen extends StatefulWidget {
@@ -10,6 +11,13 @@ class AlarmScreen extends StatefulWidget {
 class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomAppBar(title: 'Alarms'), // Use the custom AppBar
+        body: Center(
+          child: Text('Alarms screen content'),
+        ),
+      ),
+    );
   }
 }
