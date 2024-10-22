@@ -4,7 +4,11 @@ import '../constants.dart';
 import 'SwitchState.dart';
 
 class ResuableAlarm extends StatefulWidget {
-  const ResuableAlarm({super.key});
+  ResuableAlarm({
+    required this.activeColor,
+  });
+
+  final Color activeColor;
 
   @override
   State<ResuableAlarm> createState() => _ResuableAlarmState();
@@ -22,7 +26,7 @@ class _ResuableAlarmState extends State<ResuableAlarm> {
         minWidth: 361,
       ),
       decoration: BoxDecoration(
-        color: Color(0xFF31489A),
+        color: widget.activeColor,
         borderRadius: BorderRadius.circular(6.0),
       ),
       child: Padding(
@@ -37,7 +41,12 @@ class _ResuableAlarmState extends State<ResuableAlarm> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('dummy', style: dayContainer),
-                    SwitchState(),
+                    SwitchState(
+                      activeColor: widget.activeColor,
+                      inActiveTrackColor: Colors.grey,
+                      trackOutlineColor: (Colors.grey[300])!,
+                      thumbColor: Colors.white,
+                    ),
                   ],
                 ),
               ),

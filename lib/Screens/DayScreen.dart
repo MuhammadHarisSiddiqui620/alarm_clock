@@ -19,17 +19,49 @@ class _DayScreenState extends State<DayScreen> {
         appBar: CustomAppBar(title: 'Day'), // Use the custom AppBar
         body: ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 16, horizontal: 25),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Monday',
                     style: dayHeader,
                   ),
-                  ResuableAlarm(),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ResuableAlarm(
+                    activeColor: alarmColor[0],
+                  ),
                   SizedBox(height: 20),
-                  ResuableAlarm(),
+                  ResuableAlarm(
+                    activeColor: alarmColor[1],
+                  ),
+                  SizedBox(height: 20),
+                  ResuableAlarm(
+                    activeColor: alarmColor[2],
+                  ),
+                  SizedBox(height: 20),
+                  ResuableAlarm(
+                    activeColor: alarmColor[3],
+                  ),
+                  SizedBox(height: 20),
+                  ResuableAlarm(
+                    activeColor: alarmColor[4],
+                  ),
+                  SizedBox(height: 20),
+                  ResuableAlarm(
+                    activeColor: alarmColor[5],
+                  ),
+                  SizedBox(height: 20),
+                  ResuableAlarm(
+                    activeColor: alarmColor[6],
+                  ),
+                  SizedBox(height: 20),
+                  ResuableAlarm(
+                    activeColor: alarmColor[7],
+                  ),
                 ],
               ),
             ),

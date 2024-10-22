@@ -15,6 +15,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   load_switch: ^2.1.0
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -24,6 +25,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - images/
   fonts:
      - family: Roboto
        fonts:
