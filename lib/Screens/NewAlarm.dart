@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../components/CustomAppBar.dart';
+import '../components/SwitchState.dart';
 import '../constants.dart';
 
 class NewAlarm extends StatefulWidget {
@@ -51,7 +52,37 @@ class _NewAlarmState extends State<NewAlarm> {
                     contentPadding: EdgeInsets.all(25.0),
                   ),
                 ),
-              )
+              ),
+              SizedBox(
+                height: 44,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Temporary',
+                        style: appBarStyle,
+                      ),
+                      Text(
+                        'You can set a one-time alarm. \nIt will only go off once',
+                        style: secondaryTextColor,
+                      ),
+                    ],
+                  ),
+                  SwitchState(
+                    activeColor: settingSwitch,
+                    trackOutlineColor: settingSwitch,
+                    thumbColor: (Colors.grey[300])!,
+                    inActiveTrackColor: Colors.white,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 23,
+              ),
             ],
           ),
         ),
