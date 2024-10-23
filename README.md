@@ -2,11 +2,13 @@
 
 A simple and user-friendly alarm clock app built using Flutter, which allows users to set alarms with custom labels and specific time inputs. The app is designed with an intuitive interface for easy navigation, supports multiple alarms, and allows for full customization of the alarm notifications. 
 
-![Alarm Clock App Screenshots](https://github.com/user-attachments/assets/f4fad758-3e1e-45d1-a474-8321357d1ed3)
-![Day](https://github.com/user-attachments/assets/17d8051f-2cd7-4088-b93e-64b3e3c98eaa)
+![Alarm Clock App Screenshots]
 ![Alarms (2)](https://github.com/user-attachments/assets/aad41f3d-17de-4bcc-9920-5d202f3994e2)
+(https://github.com/user-attachments/assets/f4fad758-3e1e-45d1-a474-8321357d1ed3)
+
 ![Alarms (2)](https://github.com/user-attachments/assets/4fce8fef-164b-4271-9b69-ba0fd840256e)
 ![Week](https://github.com/user-attachments/assets/b2543b38-c869-43f1-a1c5-85ca9e6ea6af)
+
 ![Settings](https://github.com/user-attachments/assets/f36d30c0-d46f-4654-a4d8-ce924f3111ec)
 
 
