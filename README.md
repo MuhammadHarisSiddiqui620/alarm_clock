@@ -3,13 +3,16 @@
 A simple and user-friendly alarm clock app built using Flutter, which allows users to set alarms with custom labels and specific time inputs. The app is designed with an intuitive interface for easy navigation, supports multiple alarms, and allows for full customization of the alarm notifications. 
 
 ![Alarm Clock App Screenshots]
-![Alarms (2)](https://github.com/user-attachments/assets/aad41f3d-17de-4bcc-9920-5d202f3994e2)
-(https://github.com/user-attachments/assets/f4fad758-3e1e-45d1-a474-8321357d1ed3)
 
-![Alarms (2)](https://github.com/user-attachments/assets/4fce8fef-164b-4271-9b69-ba0fd840256e)
-![Week](https://github.com/user-attachments/assets/b2543b38-c869-43f1-a1c5-85ca9e6ea6af)
+![Day](https://github.com/user-attachments/assets/6ca54822-2dd1-4dd7-8cbb-f649d5141c79)
+![Alarms](https://github.com/user-attachments/assets/770515e8-9549-4d8d-87e3-0b2a74a06737)
 
-![Settings](https://github.com/user-attachments/assets/f36d30c0-d46f-4654-a4d8-ce924f3111ec)
+![Alarms (1)](https://github.com/user-attachments/assets/000dce68-5fbe-4c6f-8677-1d249fd2b076)
+![Alarms (2)](https://github.com/user-attachments/assets/26bd8669-9697-4cb6-97b1-f3337f0b2d00)
+
+![Week](https://github.com/user-attachments/assets/704f7824-ff4b-42c0-832d-2476b6daa542)
+![Settings](https://github.com/user-attachments/assets/bdb78a06-8aa4-4d5e-9d49-a819e545483f)
+
 
 
 ## Features ✨
@@ -29,7 +32,7 @@ The app consists of several key screens:
    - Horizontal scrolling for selecting days of the week.
    - A floating button at the bottom to add a new alarm.
 
-   ![Alarm List Screen](https://github.com/user-attachments/assets/f4fad758-3e1e-45d1-a474-8321357d1ed3)
+![Alarms (1)](https://github.com/user-attachments/assets/853d95ad-997e-44af-9121-13971832268a)
 
 ### 2. **New Alarm Screen**
    - Allows users to set a new alarm with:
@@ -37,13 +40,13 @@ The app consists of several key screens:
      - **Time Input**: A special field to enter time in `00:00` format (range: 00:00 to 24:00).
    - Button to confirm and set the alarm.
 
-   ![New Alarm Screen](path_to_new_alarm_screen_image)
+![Alarms (2)](https://github.com/user-attachments/assets/17f740e6-458c-413e-bc14-60ad572ad80a)
 
 ### 3. **Alarm Set Confirmation**
    - A screen confirming that the alarm has been successfully set with a summary of alarm details.
    - Displays the time and label of the alarm.
 
-   ![Alarm Set Confirmation Screen](path_to_alarm_confirmation_screen_image)
+![Week](https://github.com/user-attachments/assets/93108a75-32bd-4d57-834e-39fed76a0f64)
 
 ## Installation 🔧
 
@@ -51,4 +54,4 @@ To run the app locally on your device or emulator:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/alarm-app.git
+   git clone https://github.com/MuhammadHarisSiddiqui620/alarm_clock.git
