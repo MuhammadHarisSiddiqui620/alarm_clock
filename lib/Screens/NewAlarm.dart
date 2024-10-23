@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/CustomAppBar.dart';
 import '../components/SwitchState.dart';
+import '../components/WheelPicker.dart';
 import '../constants.dart';
 
 class NewAlarm extends StatefulWidget {
@@ -39,18 +40,13 @@ class _NewAlarmState extends State<NewAlarm> {
               SizedBox(
                 height: 6,
               ),
-              SizedBox(
-                height: 77,
+              Container(
                 width: 199,
-                child: TextField(
-                  decoration: InputDecoration(
-                    fillColor: Color(0xFF9711B3),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    contentPadding: EdgeInsets.all(25.0),
-                  ),
+                height: 77,
+                child: WheelPickerExample(),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Color(0xFF9711B3),
                 ),
               ),
               SizedBox(
