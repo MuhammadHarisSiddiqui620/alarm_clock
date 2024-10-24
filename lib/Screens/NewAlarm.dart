@@ -1,3 +1,4 @@
+import 'package:alarm_clock/components/SmartWheelPicker.dart';
 import 'package:flutter/material.dart';
 
 import '../components/CustomAppBar.dart';
@@ -24,22 +25,16 @@ class _NewAlarmState extends State<NewAlarm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Alarm name', style: newAlarmTextStyle),
-              SizedBox(
-                height: 2,
-              ),
+              SizedBox(height: 2),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Meeting with',
                 ),
               ),
-              SizedBox(
-                height: 23,
-              ),
+              SizedBox(height: 23),
               Text('Time', style: newAlarmTextStyle),
-              SizedBox(
-                height: 6,
-              ),
+              SizedBox(height: 6),
               Container(
                 width: 199,
                 height: 77,
@@ -49,19 +44,14 @@ class _NewAlarmState extends State<NewAlarm> {
                   color: Color(0xFF9711B3),
                 ),
               ),
-              SizedBox(
-                height: 44,
-              ),
+              SizedBox(height: 44),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Temporary',
-                        style: appBarStyle,
-                      ),
+                      Text('Temporary', style: appBarStyle),
                       Text(
                         'You can set a one-time alarm. \nIt will only go off once',
                         style: secondaryTextColor,
@@ -76,8 +66,14 @@ class _NewAlarmState extends State<NewAlarm> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 23,
+              SizedBox(height: 23),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Duration', style: appBarStyle),
+                  SizedBox(height: 8), // Optional spacing
+                  WheelPicker(), // Using the custom wheel picker
+                ],
               ),
             ],
           ),

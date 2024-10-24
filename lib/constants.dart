@@ -12,6 +12,9 @@ const dayContainer =
 const secondaryTextColor =
     TextStyle(fontSize: 12, color: Color(0xFF585858), fontFamily: 'Roboto');
 
+const weekHeaders =
+    TextStyle(fontSize: 12, color: Color(0xFF8F8F8F), fontFamily: 'Roboto');
+
 const dayContainerTimer =
     TextStyle(fontSize: 35, color: Colors.white, fontFamily: 'Roboto');
 
@@ -23,6 +26,9 @@ const buttonTextStyle =
 
 const newAlarmTextStyle =
     TextStyle(color: Color(0xFF313131), fontSize: 12, fontFamily: 'Roboto');
+
+const weekWheelerText =
+    TextStyle(color: Color(0xFF007AFF), fontSize: 17, fontFamily: 'Roboto');
 
 const List<Widget> _widgetOptions = <Widget>[
   Text(

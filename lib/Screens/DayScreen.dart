@@ -31,35 +31,35 @@ class _DayScreenState extends State<DayScreen> {
                   SizedBox(
                     height: 16,
                   ),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[0],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[1],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[2],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[3],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[4],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[5],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[6],
                   ),
                   SizedBox(height: 20),
-                  ResuableAlarm(
+                  ReusableAlarm(
                     activeColor: alarmColor[7],
                   ),
                 ],

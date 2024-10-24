@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 import 'SwitchState.dart';
 
-class ResuableAlarm extends StatefulWidget {
-  ResuableAlarm({
+class ReusableAlarm extends StatefulWidget {
+  ReusableAlarm({
     required this.activeColor,
   });
 
   final Color activeColor;
 
   @override
-  State<ResuableAlarm> createState() => _ResuableAlarmState();
+  State<ReusableAlarm> createState() => _ReusableAlarmState();
 }
 
-class _ResuableAlarmState extends State<ResuableAlarm> {
+class _ReusableAlarmState extends State<ReusableAlarm> {
   bool value = false;
   Color? colour = null;
 
