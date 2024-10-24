@@ -60,4 +60,4 @@ const List<Color> alarmColor = [
   Color(0xFF3A3A3A),
 ];
 
-const Color settingSwitch = Color(0xFFFD0746);
+const Color settingSwitch = Color(0xFFAD022B);

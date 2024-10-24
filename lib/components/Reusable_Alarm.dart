@@ -17,6 +17,8 @@ class ReusableAlarm extends StatefulWidget {
 class _ReusableAlarmState extends State<ReusableAlarm> {
   bool value = false;
   Color? colour = null;
+  String alarmName = 'dummy';
+  String alarmTime = '07:00';
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('dummy', style: dayContainer),
+                    Text(alarmName, style: dayContainer),
                     SwitchState(
                       activeColor: widget.activeColor,
                       inActiveTrackColor: Colors.grey,
@@ -50,7 +52,7 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                   ],
                 ),
               ),
-              Text('07:00', style: dayContainerTimer),
+              Text(alarmTime, style: dayContainerTimer),
             ],
           ),
         ),

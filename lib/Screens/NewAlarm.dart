@@ -19,64 +19,118 @@ class _NewAlarmState extends State<NewAlarm> {
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(title: 'New alarm'),
-        body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 23),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Alarm name', style: newAlarmTextStyle),
-              SizedBox(height: 2),
-              TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Meeting with',
-                ),
-              ),
-              SizedBox(height: 23),
-              Text('Time', style: newAlarmTextStyle),
-              SizedBox(height: 6),
-              Container(
-                width: 199,
-                height: 77,
-                child: WheelPickerExample(),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Color(0xFF9711B3),
-                ),
-              ),
-              SizedBox(height: 44),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 23),
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Text('Alarm name', style: newAlarmTextStyle),
+                  SizedBox(height: 2),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Meeting with',
+                    ),
+                  ),
+                  SizedBox(height: 23),
+                  Text('Time', style: newAlarmTextStyle),
+                  SizedBox(height: 6),
+                  Container(
+                    width: 199,
+                    height: 77,
+                    child: WheelPickerExample(),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Color(0xFF9711B3),
+                    ),
+                  ),
+                  SizedBox(height: 44),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Temporary', style: appBarStyle),
-                      Text(
-                        'You can set a one-time alarm. \nIt will only go off once',
-                        style: secondaryTextColor,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Temporary', style: appBarStyle),
+                          Text(
+                            'You can set a one-time alarm. \nIt will only go off once',
+                            style: secondaryTextColor,
+                          ),
+                        ],
+                      ),
+                      SwitchState(
+                        activeColor: settingSwitch,
+                        trackOutlineColor: settingSwitch,
+                        thumbColor: (Colors.grey[300])!,
+                        inActiveTrackColor: Colors.white,
                       ),
                     ],
                   ),
-                  SwitchState(
-                    activeColor: settingSwitch,
-                    trackOutlineColor: settingSwitch,
-                    thumbColor: (Colors.grey[300])!,
-                    inActiveTrackColor: Colors.white,
+                  SizedBox(height: 23),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Duration', style: appBarStyle),
+                      SizedBox(height: 8),
+                      WheelPicker(),
+                    ],
+                  ),
+                  SizedBox(height: 23),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Theme', style: appBarStyle),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          getTheme(Color(0xFF1A2C68)),
+                          SizedBox(width: 8),
+                          getTheme(Color(0xFF681A1A)),
+                          SizedBox(width: 8),
+                          getTheme(Color(0xFF906818)),
+                          SizedBox(width: 8),
+                          getTheme(Color(0xFF24801F)),
+                          SizedBox(width: 8),
+                          getTheme(Color(0xFF751C66)),
+                          SizedBox(width: 8),
+                          getTheme(Color(0xFF1C6675)),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
-              SizedBox(height: 23),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Duration', style: appBarStyle),
-                  SizedBox(height: 8), // Optional spacing
-                  WheelPicker(), // Using the custom wheel picker
-                ],
+            ),
+            // The save button is now placed at the bottom
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: ElevatedButton(
+                child: Text('Save this alarm', style: buttonTextStyle),
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFAD022B),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(6.0),
+                  ),
+                  minimumSize: Size(double.infinity, 57), // Full width button
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Expanded getTheme(Color colour) {
+    return Expanded(
+      child: Container(
+        height: 50,
+        width: 50,
+        child: Card(
+          color: colour,
+          margin: EdgeInsets.all(5),
         ),
       ),
     );

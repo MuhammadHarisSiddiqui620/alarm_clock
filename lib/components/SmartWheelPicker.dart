@@ -22,7 +22,6 @@ class _WheelPickerState extends State<WheelPicker> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // Hour Wheel
         Container(
@@ -58,12 +57,7 @@ class _WheelPickerState extends State<WheelPicker> {
         Text('H',
             style: TextStyle(fontSize: 16, color: Colors.black)), // Hour label
 
-        SizedBox(width: 8), // Spacer between hour and minute
-
-        Text(':', style: TextStyle(fontSize: 24)),
-
-        SizedBox(width: 8), // Spacer between hour and minute
-
+        SizedBox(width: 15),
         // Minute Wheel
         Container(
           width: 43,

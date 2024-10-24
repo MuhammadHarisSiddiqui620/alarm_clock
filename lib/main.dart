@@ -1,4 +1,5 @@
 import 'package:alarm_clock/Screens/AlarmScreen.dart';
+import 'package:alarm_clock/Screens/NewAlarm.dart';
 import 'package:alarm_clock/Screens/SettingsScreen.dart';
 import 'package:alarm_clock/Screens/WeekScreen.dart';
 import 'package:flutter/material.dart';
