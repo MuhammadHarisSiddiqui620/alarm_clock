@@ -1,7 +1,6 @@
 import 'package:alarm_clock/components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 
-import '../components/Reusable_Alarm.dart';
 import '../constants.dart';
 
 class DayScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _DayScreenState extends State<DayScreen> {
                   SizedBox(
                     height: 16,
                   ),
-                  ReusableAlarm(
+/*                  ReusableAlarm(
                     activeColor: alarmColor[0],
                   ),
                   SizedBox(height: 20),
@@ -61,7 +60,7 @@ class _DayScreenState extends State<DayScreen> {
                   SizedBox(height: 20),
                   ReusableAlarm(
                     activeColor: alarmColor[7],
-                  ),
+                  ),*/
                 ],
               ),
             ),

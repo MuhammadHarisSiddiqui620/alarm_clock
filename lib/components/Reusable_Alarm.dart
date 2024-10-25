@@ -4,22 +4,21 @@ import '../constants.dart';
 import 'SwitchState.dart';
 
 class ReusableAlarm extends StatefulWidget {
+  final String alarmName;
+  final String alarmTime;
+  final Color activeColor;
+
   ReusableAlarm({
+    required this.alarmName,
+    required this.alarmTime,
     required this.activeColor,
   });
-
-  final Color activeColor;
 
   @override
   State<ReusableAlarm> createState() => _ReusableAlarmState();
 }
 
 class _ReusableAlarmState extends State<ReusableAlarm> {
-  bool value = false;
-  Color? colour = null;
-  String alarmName = 'dummy';
-  String alarmTime = '07:00';
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,28 +32,23 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
       ),
       child: Padding(
         padding: const EdgeInsets.only(top: 13, left: 22, bottom: 24),
-        child: Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(alarmName, style: dayContainer),
-                    SwitchState(
-                      activeColor: widget.activeColor,
-                      inActiveTrackColor: Colors.grey,
-                      trackOutlineColor: (Colors.grey[300])!,
-                      thumbColor: Colors.white,
-                    ),
-                  ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(widget.alarmName, style: dayContainer),
+                SwitchState(
+                  activeColor: widget.activeColor,
+                  inActiveTrackColor: Colors.grey,
+                  trackOutlineColor: (Colors.grey[300])!,
+                  thumbColor: Colors.white,
                 ),
-              ),
-              Text(alarmTime, style: dayContainerTimer),
-            ],
-          ),
+              ],
+            ),
+            Text(widget.alarmTime, style: dayContainerTimer),
+          ],
         ),
       ),
     );

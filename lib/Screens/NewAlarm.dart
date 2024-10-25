@@ -1,3 +1,4 @@
+import 'package:alarm_clock/components/Reusable_Alarm.dart';
 import 'package:alarm_clock/components/SmartWheelPicker.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,10 @@ class NewAlarm extends StatefulWidget {
 }
 
 class _NewAlarmState extends State<NewAlarm> {
+  String alarmName = '';
+  String alarmTime = '07:00'; // Default time
+  String duration = '5 mins'; // Default duration
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,9 +33,14 @@ class _NewAlarmState extends State<NewAlarm> {
                   Text('Alarm name', style: newAlarmTextStyle),
                   SizedBox(height: 2),
                   TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        alarmName = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Meeting with',
+                      hintText: 'Meeting with...',
                     ),
                   ),
                   SizedBox(height: 23),
@@ -107,13 +117,23 @@ class _NewAlarmState extends State<NewAlarm> {
               margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: ElevatedButton(
                 child: Text('Save this alarm', style: buttonTextStyle),
-                onPressed: () {},
+                onPressed: () {
+                  // Pass the alarm data back to the previous screen
+                  Navigator.pop(
+                    context,
+                    ReusableAlarm(
+                      activeColor: Colors.purple,
+                      alarmName: alarmName,
+                      alarmTime: alarmTime,
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFAD022B),
                   shape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(6.0),
                   ),
-                  minimumSize: Size(double.infinity, 57), // Full width button
+                  minimumSize: Size(double.infinity, 57),
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:alarm_clock/components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
 import '../constants.dart';
 import 'NewAlarm.dart'; // Your constants file
 
@@ -51,11 +52,29 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       Axis.horizontal, // Enable horizontal scrolling
                   children: [
                     getDayWidget('Monday'),
+                    SizedBox(
+                      width: 20,
+                    ),
                     getDayWidget('Tuesday'),
+                    SizedBox(
+                      width: 20,
+                    ),
                     getDayWidget('Wednesday'),
+                    SizedBox(
+                      width: 20,
+                    ),
                     getDayWidget('Thursday'),
+                    SizedBox(
+                      width: 20,
+                    ),
                     getDayWidget('Friday'),
+                    SizedBox(
+                      width: 20,
+                    ),
                     getDayWidget('Saturday'),
+                    SizedBox(
+                      width: 20,
+                    ),
                     getDayWidget('Sunday'),
                   ],
                 ),
@@ -158,9 +177,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
         child: Text(
           day,
           style: TextStyle(
-            color: selectedDay == day ? Colors.purple : Colors.black,
-            fontWeight:
-                selectedDay == day ? FontWeight.bold : FontWeight.normal,
+            color: selectedDay == day ? Color(0xFF131313) : Color(0xFF7E7E7E),
+            fontFamily: 'Roboto',
+            fontSize: selectedDay == day ? 17 : 17,
           ),
         ),
       ),
