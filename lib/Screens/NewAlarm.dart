@@ -1,14 +1,21 @@
-import 'package:alarm_clock/components/Reusable_Alarm.dart';
-import 'package:alarm_clock/components/SmartWheelPicker.dart';
+import 'dart:io';
+
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 import '../components/CustomAppBar.dart';
+import '../components/SmartWheelPicker.dart';
 import '../components/SwitchState.dart';
 import '../components/WheelPicker.dart';
 import '../constants.dart';
+import '../models/alarm_model.dart';
+import 'AlarmScreen.dart';
 
 class NewAlarm extends StatefulWidget {
-  const NewAlarm({super.key});
+  final String selectedDay;
+
+  NewAlarm({required this.selectedDay});
 
   @override
   State<NewAlarm> createState() => _NewAlarmState();
@@ -16,8 +23,41 @@ class NewAlarm extends StatefulWidget {
 
 class _NewAlarmState extends State<NewAlarm> {
   String alarmName = '';
-  String alarmTime = '07:00'; // Default time
-  String duration = '5 mins'; // Default duration
+  int? selectedDurationHour;
+  int? selectedDurationMinute;
+  int? selectedAlarmHour;
+  int? selectedAlarmMinute;
+  String? selectedThemeColor;
+  late DateTime selectedDateTime;
+
+  Future<void> triggerAlarm() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+
+    selectedDateTime = DateTime(
+        now.year, now.month, now.day, selectedAlarmHour!, selectedAlarmMinute!);
+
+    var dateTime = DateTime(
+        now.year, now.month, now.day, selectedAlarmHour!, selectedAlarmMinute!);
+
+    debugPrint('dateTime $dateTime');
+
+    final alarmSettings = AlarmSettings(
+      id: DateTime.now().millisecondsSinceEpoch % 10000,
+      dateTime: dateTime,
+      assetAudioPath: 'assets/audio1.mp3',
+      volume: 0.5,
+      notificationSettings: NotificationSettings(
+        stopButton: 'Stop',
+        title: 'Alarm example',
+        body: 'Shortcut button alarm with delay of 0 hours',
+        icon: 'notification_icon',
+      ),
+      warningNotificationOnKill: Platform.isIOS,
+    );
+
+    await Alarm.set(alarmSettings: alarmSettings);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +73,7 @@ class _NewAlarmState extends State<NewAlarm> {
                   Text('Alarm name', style: newAlarmTextStyle),
                   SizedBox(height: 2),
                   TextField(
+                    style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16),
                     onChanged: (value) {
                       setState(() {
                         alarmName = value;
@@ -49,11 +90,25 @@ class _NewAlarmState extends State<NewAlarm> {
                   Container(
                     width: 199,
                     height: 77,
-                    child: WheelPickerExample(),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Color(0xFF9711B3),
+                    child: WheelPickerExample(
+                      onValueChanged: (hour, minute) {
+                        setState(() {
+                          selectedAlarmHour = hour;
+                          selectedAlarmMinute = minute;
+                        });
+                      },
                     ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color(0xFF0B0D9C),
+                        gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [
+                            Color(0xFF0B0D9C),
+                            Color(0xFF9711B3),
+                          ],
+                        )),
                   ),
                   SizedBox(height: 44),
                   Row(
@@ -83,7 +138,14 @@ class _NewAlarmState extends State<NewAlarm> {
                     children: [
                       Text('Duration', style: appBarStyle),
                       SizedBox(height: 8),
-                      WheelPicker(),
+                      WheelPicker(
+                        onValueChanged: (hour, minute) {
+                          setState(() {
+                            selectedDurationHour = hour;
+                            selectedDurationMinute = minute;
+                          });
+                        },
+                      ),
                     ],
                   ),
                   SizedBox(height: 23),
@@ -94,17 +156,17 @@ class _NewAlarmState extends State<NewAlarm> {
                       SizedBox(height: 8),
                       Row(
                         children: [
-                          getTheme(Color(0xFF1A2C68)),
+                          getTheme('0xFF1A2C68'),
                           SizedBox(width: 8),
-                          getTheme(Color(0xFF681A1A)),
+                          getTheme('0xFF681A1A'),
                           SizedBox(width: 8),
-                          getTheme(Color(0xFF906818)),
+                          getTheme('0xFF906818'),
                           SizedBox(width: 8),
-                          getTheme(Color(0xFF24801F)),
+                          getTheme('0xFF24801F'),
                           SizedBox(width: 8),
-                          getTheme(Color(0xFF751C66)),
+                          getTheme('0xFF751C66'),
                           SizedBox(width: 8),
-                          getTheme(Color(0xFF1C6675)),
+                          getTheme('0xFF1C6675'),
                         ],
                       ),
                     ],
@@ -115,26 +177,67 @@ class _NewAlarmState extends State<NewAlarm> {
             // The save button is now placed at the bottom
             Container(
               margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: ElevatedButton(
-                child: Text('Save this alarm', style: buttonTextStyle),
-                onPressed: () {
-                  // Pass the alarm data back to the previous screen
-                  Navigator.pop(
-                    context,
-                    ReusableAlarm(
-                      activeColor: Colors.purple,
-                      alarmName: alarmName,
-                      alarmTime: alarmTime,
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    child: Text('Save this alarm', style: buttonTextStyle),
+                    onPressed: () async {
+                      // Check if time and duration values are set
+                      if (selectedAlarmHour != '' &&
+                          selectedAlarmMinute != null &&
+                          selectedDurationHour != null &&
+                          selectedDurationMinute != null &&
+                          selectedThemeColor != '') {
+                        debugPrint('durationValue= ${selectedDurationHour}');
+                        debugPrint('durationValue= ${selectedDurationMinute}');
+                        debugPrint('durationValue= ${selectedAlarmHour}');
+                        debugPrint('durationValue= ${selectedAlarmMinute}');
+
+                        triggerAlarm();
+
+                        // Create an AlarmModel object with the input data
+                        final alarm = AlarmModel(
+                            alarmName:
+                                alarmName.isEmpty ? 'Default Alarm' : alarmName,
+                            alarmHour: selectedAlarmHour!,
+                            alarmMinute: selectedAlarmMinute!,
+                            durationHour: selectedDurationHour!,
+                            durationMinute: selectedDurationMinute!,
+                            alarmColor: selectedThemeColor,
+                            alarmDay:
+                                widget.selectedDay // Use the selected color
+                            );
+
+                        // Access the 'alarms' box and add the new alarm
+                        final box = Hive.box<AlarmModel>('alarm-db');
+                        await box.add(alarm);
+                        debugPrint('box length= ${box.length}');
+
+                        // Optionally navigate back or show a success message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Alarm saved successfully!')),
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AlarmScreen()),
+                        ); // Go back to previous screen
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Please set all alarm details.')),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFAD022B),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(6.0),
+                      ),
+                      minimumSize: Size(double.infinity, 57),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFAD022B),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(6.0),
                   ),
-                  minimumSize: Size(double.infinity, 57),
-                ),
+                ],
               ),
             ),
           ],
@@ -143,14 +246,27 @@ class _NewAlarmState extends State<NewAlarm> {
     );
   }
 
-  Expanded getTheme(Color colour) {
+  Expanded getTheme(String colour) {
     return Expanded(
-      child: Container(
-        height: 50,
-        width: 50,
-        child: Card(
-          color: colour,
-          margin: EdgeInsets.all(5),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            selectedThemeColor = colour; // Set the selected color
+          });
+        },
+        child: Container(
+          height: 50,
+          width: 50,
+          child: Card(
+            color: Color(int.parse(colour)),
+            margin: EdgeInsets.all(5),
+            shape: selectedThemeColor == colour
+                ? RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    side: BorderSide(color: Colors.black, width: 2),
+                  )
+                : null,
+          ),
         ),
       ),
     );

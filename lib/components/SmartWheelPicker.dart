@@ -2,6 +2,10 @@ import 'package:alarm_clock/constants.dart';
 import 'package:flutter/material.dart';
 
 class WheelPicker extends StatefulWidget {
+  final Function(int hour, int minute)? onValueChanged; // New callback property
+
+  WheelPicker({this.onValueChanged}); // Constructor update
+
   @override
   _WheelPickerState createState() => _WheelPickerState();
 }
@@ -18,6 +22,13 @@ class _WheelPickerState extends State<WheelPicker> {
   // Scroll controllers
   FixedExtentScrollController hourController = FixedExtentScrollController();
   FixedExtentScrollController minuteController = FixedExtentScrollController();
+
+  void _onSelectedItemChanged() {
+    if (widget.onValueChanged != null) {
+      widget.onValueChanged!(
+          int.parse(selectedHour), int.parse(selectedMinute));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +48,7 @@ class _WheelPickerState extends State<WheelPicker> {
             onSelectedItemChanged: (index) {
               setState(() {
                 selectedHour = hours[index];
+                _onSelectedItemChanged();
               });
             },
             childDelegate: ListWheelChildBuilderDelegate(
@@ -53,12 +65,11 @@ class _WheelPickerState extends State<WheelPicker> {
             ),
           ),
         ),
-        SizedBox(width: 8), // Spacer between hour and minute
-        Text('H',
-            style: TextStyle(fontSize: 16, color: Colors.black)), // Hour label
+        SizedBox(width: 8),
+        Text('H', style: TextStyle(fontSize: 16, color: Colors.black)),
 
         SizedBox(width: 15),
-        // Minute Wheel
+
         Container(
           width: 43,
           height: 34,
@@ -72,6 +83,7 @@ class _WheelPickerState extends State<WheelPicker> {
             onSelectedItemChanged: (index) {
               setState(() {
                 selectedMinute = minutes[index];
+                _onSelectedItemChanged();
               });
             },
             childDelegate: ListWheelChildBuilderDelegate(
@@ -88,10 +100,8 @@ class _WheelPickerState extends State<WheelPicker> {
             ),
           ),
         ),
-        SizedBox(width: 8), // Spacer between minute and label
-        Text('M',
-            style:
-                TextStyle(fontSize: 16, color: Colors.black)), // Minute label
+        SizedBox(width: 8),
+        Text('M', style: TextStyle(fontSize: 16, color: Colors.black)),
       ],
     );
   }

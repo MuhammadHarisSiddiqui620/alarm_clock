@@ -1,5 +1,6 @@
 import 'package:alarm_clock/components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../constants.dart';
 
@@ -11,6 +12,17 @@ class DayScreen extends StatefulWidget {
 }
 
 class _DayScreenState extends State<DayScreen> {
+  late String todayDay;
+
+  @override
+  void didChangeDependencies() {
+    // TODO: Remove it from didChangeDependencies if it doesnot work
+    super.didChangeDependencies();
+    todayDay = DateFormat('EEEE').format(DateTime.now());
+  }
+
+  /// e.g Thursday
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -24,7 +36,7 @@ class _DayScreenState extends State<DayScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Monday',
+                    todayDay,
                     style: dayHeader,
                   ),
                   SizedBox(

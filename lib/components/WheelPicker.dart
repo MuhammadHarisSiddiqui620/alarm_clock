@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:wheel_picker/wheel_picker.dart';
 
 class WheelPickerExample extends StatefulWidget {
-  const WheelPickerExample({super.key});
+  final Function(int hour, int minute)? onValueChanged; // Callback property
+
+  const WheelPickerExample({this.onValueChanged}); // Constructor
 
   @override
   State<WheelPickerExample> createState() => _WheelPickerExampleState();
@@ -10,21 +12,30 @@ class WheelPickerExample extends StatefulWidget {
 
 class _WheelPickerExampleState extends State<WheelPickerExample> {
   final now = TimeOfDay.now();
+  int selectedHour = 0; // Track selected hour
+  int selectedMinute = 0; // Track selected minute
+
   late final _hoursWheel = WheelPickerController(
-    itemCount: 12,
-    initialIndex: now.hour % 12,
+    itemCount: 24,
+    initialIndex: selectedHour,
   );
   late final _minutesWheel = WheelPickerController(
     itemCount: 60,
-    initialIndex: now.minute,
-    mounts: [_hoursWheel],
+    initialIndex: selectedHour,
   );
+
+  void _updateSelectedTime() {
+    // Trigger onValueChanged callback if defined
+    if (widget.onValueChanged != null) {
+      widget.onValueChanged!(selectedHour, selectedMinute);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     const textStyle = TextStyle(fontSize: 26.0, height: 1.5);
     final wheelStyle = WheelPickerStyle(
-      itemExtent: textStyle.fontSize! * textStyle.height!, // Text height
+      itemExtent: textStyle.fontSize! * textStyle.height!,
       squeeze: 1.25,
       diameterRatio: .8,
       surroundingOpacity: .25,
@@ -36,35 +47,38 @@ class _WheelPickerExampleState extends State<WheelPickerExample> {
     }
 
     final timeWheels = <Widget>[
-      for (final wheelController in [_hoursWheel, _minutesWheel])
-        Expanded(
-          child: WheelPicker(
-            builder: itemBuilder,
-            controller: wheelController,
-            looping: wheelController == _minutesWheel,
-            style: wheelStyle,
-            selectedIndexColor: Colors.white,
-          ),
-        ),
-    ];
-    timeWheels.insert(1, const Text(":", style: textStyle));
-
-    final amPmWheel = Expanded(
-      child: WheelPicker(
-        itemCount: 2,
-        builder: (context, index) {
-          return Text(["AM", "PM"][index], style: textStyle);
-        },
-        initialIndex: (now.period == DayPeriod.am) ? 0 : 1,
-        looping: false,
-        style: wheelStyle.copyWith(
-          shiftAnimationStyle: const WheelShiftAnimationStyle(
-            duration: Duration(seconds: 1),
-            curve: Curves.bounceOut,
-          ),
+      Expanded(
+        child: WheelPicker(
+          builder: itemBuilder,
+          controller: _hoursWheel,
+          looping: false,
+          style: wheelStyle,
+          selectedIndexColor: Colors.white,
+          onIndexChanged: (index) {
+            setState(() {
+              selectedHour = index;
+              _updateSelectedTime(); // Update when hour changes
+            });
+          },
         ),
       ),
-    );
+      const Text(":", style: textStyle),
+      Expanded(
+        child: WheelPicker(
+          builder: itemBuilder,
+          controller: _minutesWheel,
+          looping: true,
+          style: wheelStyle,
+          selectedIndexColor: Colors.white,
+          onIndexChanged: (index) {
+            setState(() {
+              selectedMinute = index;
+              _updateSelectedTime(); // Update when minute changes
+            });
+          },
+        ),
+      ),
+    ];
 
     return Center(
       child: SizedBox(
@@ -77,11 +91,7 @@ class _WheelPickerExampleState extends State<WheelPickerExample> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
-                children: [
-                  ...timeWheels,
-                  const SizedBox(width: 6.0),
-                  /*amPmWheel,*/
-                ],
+                children: timeWheels,
               ),
             ),
           ],
@@ -92,7 +102,6 @@ class _WheelPickerExampleState extends State<WheelPickerExample> {
 
   @override
   void dispose() {
-    // Don't forget to dispose the controllers at the end.
     _hoursWheel.dispose();
     _minutesWheel.dispose();
     super.dispose();
