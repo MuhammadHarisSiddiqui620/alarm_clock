@@ -112,19 +112,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         itemCount: selectedDayAlarms.length,
                         itemBuilder: (context, index) {
                           final alarm = selectedDayAlarms[index];
-                          return Column(
-                            children: [
-                              ReusableAlarm(
-                                alarmName:
-                                    alarm.alarmName, // Use the alarm name
-                                hour: alarm.alarmHour, // Use the alarm hour
-                                minute:
-                                    alarm.alarmMinute, // Use the alarm minute
-                                activeColor:
-                                    alarm.alarmColor, // Use the alarm color
-                              ),
-                              SizedBox(height: 20),
-                            ],
+                          return ReusableAlarm(
+                            alarmName: alarm.alarmName,
+                            hour: alarm.alarmHour,
+                            minute: alarm.alarmMinute,
+                            activeColor: alarm.alarmColor,
                           );
                         },
                       ),

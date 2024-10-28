@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:hive/hive.dart';
+
 part 'alarm_model.g.dart';
 
 @HiveType(typeId: 0)

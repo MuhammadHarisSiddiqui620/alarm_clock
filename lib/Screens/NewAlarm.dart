@@ -29,34 +29,70 @@ class _NewAlarmState extends State<NewAlarm> {
   int? selectedAlarmMinute;
   String? selectedThemeColor;
   late DateTime selectedDateTime;
+  int? alarmId;
 
-  Future<void> triggerAlarm() async {
+  // Helper function to calculate the next alarm DateTime for the selected day
+  DateTime getNextAlarmDateTime(int hour, int minute) {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    int currentDayIndex = now.weekday;
+    int selectedDayIndex = getDayIndex(widget.selectedDay);
 
-    selectedDateTime = DateTime(
-        now.year, now.month, now.day, selectedAlarmHour!, selectedAlarmMinute!);
+    int daysUntilAlarm = (selectedDayIndex - currentDayIndex + 7) % 7;
+    if (daysUntilAlarm == 0 &&
+        (hour < now.hour || (hour == now.hour && minute <= now.minute))) {
+      daysUntilAlarm = 7; // Set for next week if time has passed today
+    }
 
-    var dateTime = DateTime(
-        now.year, now.month, now.day, selectedAlarmHour!, selectedAlarmMinute!);
+    debugPrint('daysUntilAlarm= $daysUntilAlarm');
 
-    debugPrint('dateTime $dateTime');
+    return DateTime(
+        now.year, now.month, now.day + daysUntilAlarm, hour, minute);
+  }
 
+  int getDayIndex(String day) {
+    switch (day) {
+      case 'Monday':
+        return 1;
+      case 'Tuesday':
+        return 2;
+      case 'Wednesday':
+        return 3;
+      case 'Thursday':
+        return 4;
+      case 'Friday':
+        return 5;
+      case 'Saturday':
+        return 6;
+      case 'Sunday':
+        return 7;
+      default:
+        return DateTime.now().weekday; // Default to current day if invalid
+    }
+  }
+
+  Future<void> triggerAlarm(int? alarmId) async {
+    // Pass alarmId as parameter
+    if (selectedAlarmHour == null || selectedAlarmMinute == null) return;
+
+    // Only set the alarm if isEnabled is true
+    final alarmDateTime =
+        getNextAlarmDateTime(selectedAlarmHour!, selectedAlarmMinute!);
     final alarmSettings = AlarmSettings(
       id: DateTime.now().millisecondsSinceEpoch % 10000,
-      dateTime: dateTime,
+      dateTime: alarmDateTime,
       assetAudioPath: 'assets/audio1.mp3',
       volume: 0.5,
       notificationSettings: NotificationSettings(
         stopButton: 'Stop',
-        title: 'Alarm example',
-        body: 'Shortcut button alarm with delay of 0 hours',
+        title: 'Alarm',
+        body: 'Alarm set for ${widget.selectedDay}',
         icon: 'notification_icon',
       ),
       warningNotificationOnKill: Platform.isIOS,
     );
 
     await Alarm.set(alarmSettings: alarmSettings);
+    debugPrint('Alarm set for $alarmDateTime');
   }
 
   @override
@@ -193,8 +229,6 @@ class _NewAlarmState extends State<NewAlarm> {
                         debugPrint('durationValue= ${selectedAlarmHour}');
                         debugPrint('durationValue= ${selectedAlarmMinute}');
 
-                        triggerAlarm();
-
                         // Create an AlarmModel object with the input data
                         final alarm = AlarmModel(
                             alarmName:
@@ -210,7 +244,10 @@ class _NewAlarmState extends State<NewAlarm> {
 
                         // Access the 'alarms' box and add the new alarm
                         final box = Hive.box<AlarmModel>('alarm-db');
-                        await box.add(alarm);
+                        alarmId = await box.add(alarm);
+
+                        triggerAlarm(alarmId);
+
                         debugPrint('box length= ${box.length}');
 
                         // Optionally navigate back or show a success message
