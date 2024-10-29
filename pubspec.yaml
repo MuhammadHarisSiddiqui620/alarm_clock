@@ -24,6 +24,7 @@ dependencies:
   build_runner: ^2.4.13
   alarm: ^4.0.8
   intl: ^0.19.0
+  permission_handler: ^11.1.0
 
 dev_dependencies:
   flutter_test:
