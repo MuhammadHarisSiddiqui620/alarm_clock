@@ -1,10 +1,10 @@
-import 'package:alarm_clock/components/CustomAppBar.dart';
-import 'package:alarm_clock/components/Reusable_Alarm.dart';
-import 'package:alarm_clock/models/alarm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 
+import '../Components/CustomAppBar.dart';
+import '../Components/Reusable_Alarm.dart';
+import '../Models/alarm_model.dart';
 import '../constants.dart';
 import 'NewAlarm.dart'; // Your constants file
 
@@ -108,16 +108,14 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           ],
                         ),
                       )
-                    : ListView.builder(
+                    : ListView.separated(
                         itemCount: selectedDayAlarms.length,
                         itemBuilder: (context, index) {
                           final alarm = selectedDayAlarms[index];
-                          return ReusableAlarm(
-                            alarmName: alarm.alarmName,
-                            hour: alarm.alarmHour,
-                            minute: alarm.alarmMinute,
-                            activeColor: alarm.alarmColor,
-                          );
+                          return ReusableAlarm(alarm: alarm);
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(height: 20);
                         },
                       ),
               ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alarm/alarm.dart';
+import 'package:alarm_clock/Models/alarm_model.dart';
 import 'package:flutter/material.dart';
 
 class AlarmMethods {
@@ -43,26 +44,25 @@ class AlarmMethods {
     }
   }
 
-  Future<void> triggerAlarm(int? alarmId, int? selectedAlarmHour,
-      int? selectedAlarmMinute, String selectedDay) async {
-    debugPrint('alarmId= $alarmId');
+  Future<void> triggerAlarm(AlarmModel alarm) async {
+    debugPrint('alarmId= ${alarm.alarmId}');
 
     // Pass alarmId as parameter
-    if (selectedAlarmHour == null || selectedAlarmMinute == null) return;
+    if (alarm.alarmHour == null || alarm.alarmMinute == null) return;
 
     // Only set the alarm if isEnabled is true
     final alarmDateTime = getNextAlarmDateTime(
-        selectedAlarmHour, selectedAlarmMinute, selectedDay);
+        alarm.alarmHour!, alarm.alarmMinute!, alarm.alarmDay!);
 
     final alarmSettings = AlarmSettings(
-      id: alarmId!,
+      id: alarm.alarmId!,
       dateTime: alarmDateTime,
       assetAudioPath: 'assets/audio1.mp3',
       volume: 0.5,
       notificationSettings: NotificationSettings(
         stopButton: 'Stop',
         title: 'Alarm',
-        body: 'Alarm set for ${selectedDay}',
+        body: 'Alarm set for ${alarm.alarmDay}',
         icon: 'notification_icon',
       ),
       warningNotificationOnKill: Platform.isIOS,

@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'alarm_model.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class AlarmModel extends HiveObject {
   @HiveField(0)
   final String? alarmName;
@@ -23,7 +23,13 @@ class AlarmModel extends HiveObject {
   final String? alarmColor;
 
   @HiveField(6)
-  final String? alarmDay; // New property to store the day
+  final String? alarmDay;
+
+  @HiveField(7)
+  int? alarmId;
+
+  @HiveField(8)
+  bool? isEnabled;
 
   AlarmModel({
     required this.alarmName,
@@ -33,5 +39,7 @@ class AlarmModel extends HiveObject {
     required this.durationMinute,
     required this.alarmColor,
     required this.alarmDay,
+    required this.alarmId,
+    required this.isEnabled,
   });
 }

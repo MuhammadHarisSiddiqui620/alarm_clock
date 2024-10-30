@@ -1,14 +1,14 @@
 import 'package:alarm/alarm.dart';
-import 'package:alarm_clock/components/CustomAppBar.dart';
-import 'package:alarm_clock/components/Reusable_Alarm.dart';
-import 'package:alarm_clock/services/permission.dart';
+import 'package:alarm_clock/Components/CustomAppBar.dart';
+import 'package:alarm_clock/Components/Reusable_Alarm.dart';
+import 'package:alarm_clock/Services/permission.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
+import '../Models/alarm_model.dart';
 import '../constants.dart';
-import '../models/alarm_model.dart';
 
 class DayScreen extends StatefulWidget {
   const DayScreen({super.key});
@@ -82,16 +82,14 @@ class _DayScreenState extends State<DayScreen> {
                           ],
                         ),
                       )
-                    : ListView.builder(
+                    : ListView.separated(
                         itemCount: selectedDayAlarms.length,
                         itemBuilder: (context, index) {
                           final alarm = selectedDayAlarms[index];
-                          return ReusableAlarm(
-                            alarmName: alarm.alarmName,
-                            hour: alarm.alarmHour,
-                            minute: alarm.alarmMinute,
-                            activeColor: alarm.alarmColor,
-                          );
+                          return ReusableAlarm(alarm: alarm);
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(height: 20);
                         },
                       ),
               ),

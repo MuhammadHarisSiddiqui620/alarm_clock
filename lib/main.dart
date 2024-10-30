@@ -1,14 +1,13 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm_clock/Screens/AlarmScreen.dart';
-import 'package:alarm_clock/Screens/NewAlarm.dart';
 import 'package:alarm_clock/Screens/SettingsScreen.dart';
 import 'package:alarm_clock/Screens/WeekScreen.dart';
-import 'package:alarm_clock/models/alarm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'Components/BottomNavBar.dart';
+import 'Models/alarm_model.dart';
 import 'Screens/DayScreen.dart';
-import 'components/BottomNavBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

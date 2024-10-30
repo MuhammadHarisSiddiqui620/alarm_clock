@@ -1,7 +1,7 @@
-import 'package:alarm_clock/components/CustomAppBar.dart';
+import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
 
-import '../components/SwitchState.dart';
+import '../Components/SwitchState.dart';
 import '../constants.dart';
 
 class SettingsScreen extends StatefulWidget {

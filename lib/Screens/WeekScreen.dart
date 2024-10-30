@@ -1,5 +1,5 @@
-import 'package:alarm_clock/components/CustomAppBar.dart';
-import 'package:alarm_clock/components/TimelineStatusPage.dart';
+import 'package:alarm_clock/Components/CustomAppBar.dart';
+import 'package:alarm_clock/Components/TimelineStatusPage.dart';
 import 'package:flutter/material.dart';
 
 import '../constants.dart';

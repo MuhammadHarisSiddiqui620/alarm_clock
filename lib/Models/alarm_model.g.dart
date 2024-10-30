@@ -24,6 +24,8 @@ class AlarmModelAdapter extends TypeAdapter<AlarmModel> {
       durationMinute: fields[4] as int?,
       alarmColor: fields[5] as String?,
       alarmDay: fields[6] as String?,
+      alarmId: fields[7] as int?,
+      isEnabled: fields[8] as bool?,
     );
   }
 
@@ -44,7 +46,11 @@ class AlarmModelAdapter extends TypeAdapter<AlarmModel> {
       ..writeByte(5)
       ..write(obj.alarmColor)
       ..writeByte(6)
-      ..write(obj.alarmDay);
+      ..write(obj.alarmDay)
+      ..writeByte(7)
+      ..write(obj.alarmId)
+      ..writeByte(8)
+      ..write(obj.isEnabled);
   }
 
   @override
