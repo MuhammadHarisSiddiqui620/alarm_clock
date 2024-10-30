@@ -112,7 +112,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         itemCount: selectedDayAlarms.length,
                         itemBuilder: (context, index) {
                           final alarm = selectedDayAlarms[index];
-                          return ReusableAlarm(alarm: alarm);
+                          return ReusableAlarm(
+                            alarm: alarm,
+                          );
                         },
                         separatorBuilder: (BuildContext context, int index) {
                           return SizedBox(height: 20);

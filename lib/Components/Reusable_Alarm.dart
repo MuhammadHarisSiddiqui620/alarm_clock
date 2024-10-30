@@ -5,9 +5,10 @@ import '../Models/alarm_model.dart';
 import '../constants.dart';
 
 class ReusableAlarm extends StatefulWidget {
-  AlarmModel alarm;
+  final AlarmModel alarm;
 
-  ReusableAlarm({
+  const ReusableAlarm({
+    super.key,
     required this.alarm,
   });
 
@@ -16,14 +17,14 @@ class ReusableAlarm extends StatefulWidget {
 }
 
 class _ReusableAlarmState extends State<ReusableAlarm> {
-  bool light = true;
-  static NewAlarm alarms = NewAlarm();
-
   @override
   Widget build(BuildContext context) {
     // Provide a fallback value if activeColor is null
-    Color backgroundColor = Color(
-        int.parse(widget.alarm.alarmColor ?? '0xFF000000')); // Default to black
+    Color backgroundColor =
+        Color(int.parse(widget.alarm.alarmColor)); // Default to black
+
+    debugPrint(
+        'ReusableAlarm Widget build isEnabled= ${widget.alarm.isEnabled}');
 
     return Container(
       constraints: BoxConstraints(
@@ -47,7 +48,7 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                     style: dayContainer), // Fallback for null alarmName
                 Switch(
                   // This bool value toggles the switch.
-                  value: light,
+                  value: widget.alarm.isEnabled,
                   activeColor: backgroundColor,
                   inactiveTrackColor: Colors.grey,
                   trackOutlineWidth: MaterialStateProperty.all(0.7),
@@ -57,8 +58,6 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                   onChanged: (bool value) async {
                     // This is called when the user toggles the switch.
                     setState(() {
-                      light = value;
-                      widget.alarm.isEnabled = value;
                       debugPrint(
                           'ReusableAlarm isEnabled= ${widget.alarm.isEnabled}');
                       debugPrint(
@@ -67,7 +66,12 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                       widget.alarm.isEnabled = value;
                       widget.alarm.save();
 
+                      debugPrint(
+                          'ReusableAlarm onChanged alarm= ${widget.alarm.alarmId} + ${widget.alarm.isEnabled}');
+
                       // Trigger any additional actions (if needed)
+                      NewAlarm alarms =
+                          NewAlarm(selectedDay: widget.alarm.alarmDay);
                       alarms.triggerAlarm(widget.alarm);
                     });
                   },
@@ -76,10 +80,10 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
             ),
             Row(
               children: [
-                Text(widget.alarm.alarmHour?.toString() ?? '00',
+                Text(widget.alarm.alarmHour.toString(),
                     style: dayContainerTimer), // Fallback for null hour
                 Text(':', style: dayContainerTimer),
-                Text(widget.alarm.alarmMinute?.toString() ?? '00',
+                Text(widget.alarm.alarmMinute.toString(),
                     style: dayContainerTimer), // Fallback for null minute
               ],
             ),

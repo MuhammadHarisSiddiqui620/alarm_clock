@@ -5,31 +5,31 @@ part 'alarm_model.g.dart';
 @HiveType(typeId: 1)
 class AlarmModel extends HiveObject {
   @HiveField(0)
-  final String? alarmName;
+  String? alarmName;
 
   @HiveField(1)
-  final int? alarmHour;
+  int alarmHour;
 
   @HiveField(2)
-  final int? alarmMinute;
+  int alarmMinute;
 
   @HiveField(3)
-  final int? durationHour;
+  int durationHour;
 
   @HiveField(4)
-  final int? durationMinute;
+  int durationMinute;
 
   @HiveField(5)
-  final String? alarmColor;
+  String alarmColor;
 
   @HiveField(6)
-  final String? alarmDay;
+  String alarmDay;
 
   @HiveField(7)
-  int? alarmId;
+  int alarmId;
 
   @HiveField(8)
-  bool? isEnabled;
+  bool isEnabled;
 
   AlarmModel({
     required this.alarmName,

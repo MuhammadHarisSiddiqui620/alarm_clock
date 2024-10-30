@@ -47,15 +47,12 @@ class AlarmMethods {
   Future<void> triggerAlarm(AlarmModel alarm) async {
     debugPrint('alarmId= ${alarm.alarmId}');
 
-    // Pass alarmId as parameter
-    if (alarm.alarmHour == null || alarm.alarmMinute == null) return;
-
     // Only set the alarm if isEnabled is true
     final alarmDateTime = getNextAlarmDateTime(
-        alarm.alarmHour!, alarm.alarmMinute!, alarm.alarmDay!);
+        alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
 
     final alarmSettings = AlarmSettings(
-      id: alarm.alarmId!,
+      id: alarm.alarmId,
       dateTime: alarmDateTime,
       assetAudioPath: 'assets/audio1.mp3',
       volume: 0.5,

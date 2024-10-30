@@ -20,13 +20,13 @@ dependencies:
   timelines: ^0.1.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  hive_generator: ^2.0.1
-  build_runner: ^2.4.13
   alarm: ^4.0.8
   intl: ^0.19.0
   permission_handler: ^11.1.0
 
 dev_dependencies:
+  hive_generator: ^1.1.3
+  build_runner: ^2.1.11
   flutter_test:
     sdk: flutter
 

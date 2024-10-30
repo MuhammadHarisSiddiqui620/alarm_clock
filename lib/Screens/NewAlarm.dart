@@ -4,7 +4,6 @@ import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-import '../Components/AlarmMethods.dart';
 import '../Components/CustomAppBar.dart';
 import '../Components/SmartWheelPicker.dart';
 import '../Components/SwitchState.dart';
@@ -14,9 +13,9 @@ import '../constants.dart';
 import 'AlarmScreen.dart';
 
 class NewAlarm extends StatefulWidget {
-  final String? selectedDay;
+  final String selectedDay;
 
-  NewAlarm({this.selectedDay});
+  const NewAlarm({super.key, required this.selectedDay});
 
   // Helper function to calculate the next alarm DateTime for the selected day
   DateTime getNextAlarmDateTime(int hour, int minute, String selectedDay) {
@@ -63,19 +62,16 @@ class NewAlarm extends StatefulWidget {
 
     if (alarm.isEnabled == false) {
       debugPrint('triggerAlarm isEnabled false');
-      Alarm.stop(alarm.alarmId!);
+      Alarm.stop(alarm.alarmId);
     } else {
       debugPrint('triggerAlarm isEnabled true');
 
-      // Pass alarmId as parameter
-      if (alarm.alarmHour == null || alarm.alarmMinute == null) return;
-
       // Only set the alarm if isEnabled is true
       final alarmDateTime = getNextAlarmDateTime(
-          alarm.alarmHour!, alarm.alarmMinute!, alarm.alarmDay!);
+          alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
 
       final alarmSettings = AlarmSettings(
-        id: alarm.alarmId!,
+        id: alarm.alarmId,
         dateTime: alarmDateTime,
         assetAudioPath: 'assets/audio1.mp3',
         volume: 0.5,
@@ -99,14 +95,13 @@ class NewAlarm extends StatefulWidget {
 
 class _NewAlarmState extends State<NewAlarm> {
   String alarmName = '';
-  int? selectedDurationHour;
-  int? selectedDurationMinute;
-  int? selectedAlarmHour;
-  int? selectedAlarmMinute;
-  String? selectedThemeColor;
+  int selectedDurationHour = 0;
+  int selectedDurationMinute = 0;
+  int selectedAlarmHour = 0;
+  int selectedAlarmMinute = 0;
+  String selectedThemeColor = '';
   late DateTime selectedDateTime;
   int alarmId = 0;
-  static AlarmMethods alarms = AlarmMethods();
 
   // Helper function to calculate the next alarm DateTime for the selected day
   DateTime getNextAlarmDateTime(int hour, int minute, String selectedDay) {
@@ -155,14 +150,11 @@ class _NewAlarmState extends State<NewAlarm> {
       return;
     } else {
       // Pass alarmId as parameter
-      if (alarm.alarmHour == null || alarm.alarmMinute == null) return;
-
-      // Only set the alarm if isEnabled is true
       final alarmDateTime = getNextAlarmDateTime(
-          alarm.alarmHour!, alarm.alarmMinute!, alarm.alarmDay!);
+          alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
 
       final alarmSettings = AlarmSettings(
-        id: alarm.alarmId!,
+        id: alarm.alarmId,
         dateTime: alarmDateTime,
         assetAudioPath: 'assets/audio1.mp3',
         volume: 0.5,
@@ -308,11 +300,7 @@ class _NewAlarmState extends State<NewAlarm> {
                     child: Text('Save this alarm', style: buttonTextStyle),
                     onPressed: () async {
                       // Check if time and duration values are set
-                      if (selectedAlarmHour != '' &&
-                          selectedAlarmMinute != null &&
-                          selectedDurationHour != null &&
-                          selectedDurationMinute != null &&
-                          selectedThemeColor != '') {
+                      if (selectedAlarmHour != '' && selectedThemeColor != '') {
                         debugPrint('durationValue= ${selectedDurationHour}');
                         debugPrint('durationValue= ${selectedDurationMinute}');
                         debugPrint('durationValue= ${selectedAlarmHour}');
@@ -323,10 +311,10 @@ class _NewAlarmState extends State<NewAlarm> {
                           alarmId: alarmId + 1, // Set to null initially
                           alarmName:
                               alarmName.isEmpty ? 'Default Alarm' : alarmName,
-                          alarmHour: selectedAlarmHour!,
-                          alarmMinute: selectedAlarmMinute!,
-                          durationHour: selectedDurationHour!,
-                          durationMinute: selectedDurationMinute!,
+                          alarmHour: selectedAlarmHour,
+                          alarmMinute: selectedAlarmMinute,
+                          durationHour: selectedDurationHour,
+                          durationMinute: selectedDurationMinute,
                           alarmColor: selectedThemeColor,
                           alarmDay: widget.selectedDay,
                           isEnabled: true,
@@ -346,11 +334,7 @@ class _NewAlarmState extends State<NewAlarm> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Alarm saved successfully!')),
                         );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AlarmScreen()),
-                        ); // Go back to previous screen
+                        Navigator.pop(context); // Go back to previous screen
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
