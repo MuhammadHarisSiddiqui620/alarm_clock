@@ -1,7 +1,9 @@
 import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:alarm_clock/Components/TimelineStatusPage.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
+import '../Models/alarm_model.dart';
 import '../constants.dart';
 
 class WeekScreen extends StatefulWidget {
@@ -12,85 +14,106 @@ class WeekScreen extends StatefulWidget {
 }
 
 class _WeekScreenState extends State<WeekScreen> {
+  // Track the selected day (e.g., Monday, Tuesday)
+  String selectedDay = 'Monday';
+
+  // Store all alarms for the selected day
+  List<AlarmModel> alarms = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadAlarms(); // Load alarms from Hive
+  }
+
+  Future<void> _loadAlarms() async {
+    var box = Hive.box<AlarmModel>('alarm-db');
+    setState(() {
+      alarms =
+          box.values.where((alarm) => alarm.alarmDay == selectedDay).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+
+    // Get alarms for the selected day
+    List<AlarmModel> selectedDayAlarms = alarms.toList();
+
+    debugPrint('selectedDayAlarms = $selectedDayAlarms');
 
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(title: 'Week'), // Use the custom AppBar
         body: Container(
-          margin: EdgeInsets.symmetric(vertical: 25, horizontal: 27),
+          margin: EdgeInsets.symmetric(vertical: 25, horizontal: 16),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.center, // Center the content vertically
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Horizontal ListView for days of the week
               Container(
                 height: 50,
                 margin: EdgeInsets.only(
-                    left: screenWidth * 0.5 -
-                        50), // 50% of screen width minus half the container width (75)
+                    left: screenWidth * 0.5 - 50), // 50% of screen width
                 child: ListView(
                   scrollDirection:
                       Axis.horizontal, // Enable horizontal scrolling
                   children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Monday',
-                        style: appBarStyle,
-                      ),
+                    getDayWidget('Monday'),
+                    SizedBox(
+                      width: 20,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Tuesday',
-                        style: appBarStyle,
-                      ),
+                    getDayWidget('Tuesday'),
+                    SizedBox(
+                      width: 20,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Wednesday',
-                        style: appBarStyle,
-                      ),
+                    getDayWidget('Wednesday'),
+                    SizedBox(
+                      width: 20,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Thursday',
-                        style: appBarStyle,
-                      ),
+                    getDayWidget('Thursday'),
+                    SizedBox(
+                      width: 20,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Friday',
-                        style: appBarStyle,
-                      ),
+                    getDayWidget('Friday'),
+                    SizedBox(
+                      width: 20,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Saturday',
-                        style: appBarStyle,
-                      ),
+                    getDayWidget('Saturday'),
+                    SizedBox(
+                      width: 20,
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Sunday',
-                        style: appBarStyle,
-                      ),
-                    ),
+                    getDayWidget('Sunday'),
                   ],
                 ),
               ),
-              Expanded(
-                child: TimelineStatusPage(),
-              ),
+              TimelineStatusPage(alarms: selectedDayAlarms),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget for each day button in the horizontal list
+  GestureDetector getDayWidget(String day) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedDay = day;
+          _loadAlarms(); // Load alarms when a day is selected
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Text(
+          day,
+          style: TextStyle(
+            color: selectedDay == day ? Color(0xFF131313) : Color(0xFF7E7E7E),
+            fontFamily: 'Roboto',
+            fontSize: 17,
           ),
         ),
       ),

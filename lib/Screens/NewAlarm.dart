@@ -334,7 +334,10 @@ class _NewAlarmState extends State<NewAlarm> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Alarm saved successfully!')),
                         );
-                        Navigator.pop(context); // Go back to previous screen
+                        Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    AlarmScreen()) // Ckall loadAlarm when returning from NewAlarm
+                            ); // Go back to previous screen
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
