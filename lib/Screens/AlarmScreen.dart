@@ -29,6 +29,20 @@ class _AlarmScreenState extends State<AlarmScreen> {
     _loadAlarms(); // Load alarms from Hive
   }
 
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _loadAlarms(); // Load alarms from Hive
+  }
+
+  @override
+  void activate() {
+    // TODO: implement activate
+    super.activate();
+    _loadAlarms(); // Load alarms from Hive
+  }
+
   Future<void> _loadAlarms() async {
     var box = Hive.box<AlarmModel>('alarm-db');
     setState(() {
