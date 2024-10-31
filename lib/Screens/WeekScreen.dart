@@ -2,9 +2,9 @@ import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:alarm_clock/Components/TimelineStatusPage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 
 import '../Models/alarm_model.dart';
-import '../constants.dart';
 
 class WeekScreen extends StatefulWidget {
   const WeekScreen({super.key});
@@ -22,9 +22,77 @@ class _WeekScreenState extends State<WeekScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadAlarms(); // Load alarms from Hive
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true, // Ensures the bottom sheet wraps content size
+        builder: (BuildContext context) {
+          return Container(
+            padding: EdgeInsets.all(
+                16), // Add padding to avoid content touching edges
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Color(0xFFFFFFFF),
+                  Color(0xFF999999),
+                ],
+              ),
+            ),
+            child: Wrap(
+              children: [
+                Container(
+                  alignment: Alignment.topLeft, // Align date to top left
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('d MMMM').format(DateTime.now()),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Roboto',
+                          color: Color(0xFF3A3A3A),
+                        ),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            DateFormat('d MMMM').format(DateTime.now()),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Roboto',
+                              color: Color(0xFF3A3A3A),
+                            ),
+                          ),
+                          Text(
+                            DateFormat('d MMMM').format(DateTime.now()),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Roboto',
+                              color: Color(0xFF3A3A3A),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Additional content here
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 
   Future<void> _loadAlarms() async {
