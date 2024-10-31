@@ -30,6 +30,18 @@ const newAlarmTextStyle =
 const weekWheelerText =
     TextStyle(color: Color(0xFF007AFF), fontSize: 17, fontFamily: 'Roboto');
 
+const bottomSheetText =
+    TextStyle(color: Color(0xFF212121), fontSize: 17, fontFamily: 'Roboto');
+
+const bottomSheetTexts =
+    TextStyle(color: Color(0xFF3A3A3A), fontSize: 16, fontFamily: 'Roboto');
+
+const bottomSheetTextheader = TextStyle(
+    color: Color(0xFF3A3A3A),
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    fontWeight: FontWeight.bold);
+
 const List<Widget> _widgetOptions = <Widget>[
   Text(
     'Index 0: Day',

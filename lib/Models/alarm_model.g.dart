@@ -17,7 +17,7 @@ class AlarmModelAdapter extends TypeAdapter<AlarmModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AlarmModel(
-      alarmName: fields[0] as String?,
+      alarmName: fields[0] as String,
       alarmHour: fields[1] as int,
       alarmMinute: fields[2] as int,
       durationHour: fields[3] as int,

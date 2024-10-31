@@ -5,7 +5,7 @@ part 'alarm_model.g.dart';
 @HiveType(typeId: 1)
 class AlarmModel extends HiveObject {
   @HiveField(0)
-  String? alarmName;
+  String alarmName;
 
   @HiveField(1)
   int alarmHour;

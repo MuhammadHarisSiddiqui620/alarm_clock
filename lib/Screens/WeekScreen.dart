@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import '../Models/alarm_model.dart';
+import '../constants.dart';
 
 class WeekScreen extends StatefulWidget {
   const WeekScreen({super.key});
@@ -50,43 +51,80 @@ class _WeekScreenState extends State<WeekScreen> {
             child: Wrap(
               children: [
                 Container(
-                  alignment: Alignment.topLeft, // Align date to top left
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         DateFormat('d MMMM').format(DateTime.now()),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Roboto',
-                          color: Color(0xFF3A3A3A),
-                        ),
+                        style: bottomSheetTextheader,
                       ),
+                      SizedBox(height: 15),
+
                       Row(
-                        children: <Widget>[
-                          Text(
-                            DateFormat('d MMMM').format(DateTime.now()),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Roboto',
-                              color: Color(0xFF3A3A3A),
-                            ),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.circle,
+                                color: Color(
+                                    0xFF959595), // Set icon color from alarm
+                                size: 12.0,
+                              ),
+                              SizedBox(width: 10),
+                              Text('Free time', style: bottomSheetTexts),
+                            ],
                           ),
-                          Text(
-                            DateFormat('d MMMM').format(DateTime.now()),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Roboto',
-                              color: Color(0xFF3A3A3A),
-                            ),
-                          ),
+                          Text('1h 12m',
+                              style: bottomSheetText), // Show calculated time
                         ],
+                      ),
+
+                      SizedBox(height: 15),
+
+                      // ListView.builder for alarms
+                      ListView.builder(
+                        shrinkWrap: true, // Prevents infinite height
+                        itemCount: alarms.length,
+                        itemBuilder: (context, index) {
+                          final alarm = alarms[index];
+                          // Calculate remaining time
+                          int totalMinutes = (alarm.alarmHour * 60 +
+                                  alarm.alarmMinute) -
+                              (alarm.durationHour * 60 + alarm.durationMinute);
+                          String timeFormat =
+                              '${totalMinutes ~/ 60}h ${totalMinutes % 60}M';
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      color: Color(int.parse(alarm
+                                          .alarmColor)), // Set icon color from alarm
+                                      size: 12.0,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(alarm.alarmName,
+                                        style: bottomSheetTexts),
+                                  ],
+                                ),
+                                Text(timeFormat,
+                                    style:
+                                        bottomSheetText), // Show calculated time
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
                 ),
-                // Additional content here
               ],
             ),
           );
