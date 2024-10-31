@@ -45,33 +45,34 @@ class AlarmMethods {
   }
 
   Future<void> triggerAlarm(AlarmModel alarm) async {
-    debugPrint('alarmId= ${alarm.alarmId}');
+    debugPrint('triggerAlarm alarmId= ${alarm.alarmId}');
+    debugPrint('triggerAlarm isEnabled= ${alarm.isEnabled}');
 
-    // Only set the alarm if isEnabled is true
-    final alarmDateTime = getNextAlarmDateTime(
-        alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
+    if (alarm.isEnabled == false) {
+      Alarm.stop(alarm.alarmId);
+      return;
+    } else {
+      // Pass alarmId as parameter
+      final alarmDateTime = getNextAlarmDateTime(
+          alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
 
-    final alarmSettings = AlarmSettings(
-      id: alarm.alarmId,
-      dateTime: alarmDateTime,
-      assetAudioPath: 'assets/audio1.mp3',
-      volume: 0.5,
-      notificationSettings: NotificationSettings(
-        stopButton: 'Stop',
-        title: 'Alarm',
-        body: 'Alarm set for ${alarm.alarmDay}',
-        icon: 'notification_icon',
-      ),
-      warningNotificationOnKill: Platform.isIOS,
-    );
+      final alarmSettings = AlarmSettings(
+        id: alarm.alarmId,
+        dateTime: alarmDateTime,
+        assetAudioPath: 'assets/audio1.mp3',
+        volume: alarm.volume,
+        vibrate: alarm.vibrate,
+        notificationSettings: NotificationSettings(
+          stopButton: 'Stop',
+          title: 'Alarm',
+          body: 'Alarm set for ${alarm.alarmDay}',
+          icon: 'notification_icon',
+        ),
+        warningNotificationOnKill: Platform.isIOS,
+      );
 
-    await Alarm.set(alarmSettings: alarmSettings);
-    debugPrint('Alarm set for $alarmDateTime');
+      await Alarm.set(alarmSettings: alarmSettings);
+      debugPrint('Alarm set for $alarmDateTime');
+    }
   }
-
-  void stopAlarm(int? alarmId) {
-    Alarm.stop(alarmId!);
-  }
-
-  void saveInDb() {}
 }

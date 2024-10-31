@@ -31,6 +31,12 @@ class AlarmModel extends HiveObject {
   @HiveField(8)
   bool isEnabled;
 
+  @HiveField(9)
+  bool vibrate;
+
+  @HiveField(10)
+  double volume;
+
   AlarmModel({
     required this.alarmName,
     required this.alarmHour,
@@ -41,5 +47,7 @@ class AlarmModel extends HiveObject {
     required this.alarmDay,
     required this.alarmId,
     required this.isEnabled,
+    required this.vibrate,
+    required this.volume,
   });
 }

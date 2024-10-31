@@ -1,3 +1,4 @@
+import 'package:alarm_clock/Components/AlarmMethods.dart';
 import 'package:alarm_clock/Screens/NewAlarm.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,8 @@ class ReusableAlarm extends StatefulWidget {
 }
 
 class _ReusableAlarmState extends State<ReusableAlarm> {
+  AlarmMethods alarms = AlarmMethods();
+
   @override
   Widget build(BuildContext context) {
     // Provide a fallback value if activeColor is null
@@ -70,8 +73,6 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                           'ReusableAlarm onChanged alarm= ${widget.alarm.alarmId} + ${widget.alarm.isEnabled}');
 
                       // Trigger any additional actions (if needed)
-                      NewAlarm alarms =
-                          NewAlarm(selectedDay: widget.alarm.alarmDay);
                       alarms.triggerAlarm(widget.alarm);
                     });
                   },
