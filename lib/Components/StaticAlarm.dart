@@ -42,7 +42,7 @@ class _StaticAlarmState extends State<StaticAlarm> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.alarm.alarmName ?? 'No Name',
+                Text(widget.alarm.alarmName,
                     style: dayContainer), // Fallback for null alarmName
               ],
             ),

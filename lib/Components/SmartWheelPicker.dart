@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class WheelPicker extends StatefulWidget {
   final Function(int hour, int minute)? onValueChanged; // New callback property
+  bool theme;
 
-  WheelPicker({this.onValueChanged}); // Constructor update
+  WheelPicker({this.onValueChanged, required this.theme}); // Constructor update
 
   @override
   _WheelPickerState createState() => _WheelPickerState();
@@ -39,7 +40,7 @@ class _WheelPickerState extends State<WheelPicker> {
           width: 43,
           height: 34,
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: widget.theme ? Colors.black12 : Colors.grey,
             borderRadius: BorderRadius.circular(6),
           ),
           child: ListWheelScrollView.useDelegate(
@@ -66,7 +67,10 @@ class _WheelPickerState extends State<WheelPicker> {
           ),
         ),
         SizedBox(width: 8),
-        Text('H', style: TextStyle(fontSize: 16, color: Colors.black)),
+        Text('H',
+            style: TextStyle(
+                fontSize: 16,
+                color: widget.theme ? Color(0xFFB4B4B4) : Colors.black)),
 
         SizedBox(width: 15),
 
@@ -74,7 +78,7 @@ class _WheelPickerState extends State<WheelPicker> {
           width: 43,
           height: 34,
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: widget.theme ? Colors.black12 : Colors.grey,
             borderRadius: BorderRadius.circular(6),
           ),
           child: ListWheelScrollView.useDelegate(
@@ -101,7 +105,10 @@ class _WheelPickerState extends State<WheelPicker> {
           ),
         ),
         SizedBox(width: 8),
-        Text('M', style: TextStyle(fontSize: 16, color: Colors.black)),
+        Text('M',
+            style: TextStyle(
+                fontSize: 16,
+                color: widget.theme ? Color(0xFFB4B4B4) : Colors.black)),
       ],
     );
   }

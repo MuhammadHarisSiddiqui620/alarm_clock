@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 const appBarStyle =
     TextStyle(color: Colors.black, fontSize: 17, fontFamily: 'Roboto');
 
+const secondaryAppBarStyle =
+    TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'Roboto');
+
 const dayHeader =
     TextStyle(fontSize: 21, color: Colors.black, fontFamily: 'Roboto');
+
+const secondaryDayHeader =
+    TextStyle(fontSize: 21, color: Colors.white, fontFamily: 'Roboto');
 
 const dayContainer =
     TextStyle(fontSize: 14, color: Colors.white, fontFamily: 'Roboto');
@@ -24,8 +30,11 @@ const TextStyle optionStyle =
 const buttonTextStyle =
     TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'Roboto');
 
-const newAlarmTextStyle =
+const AlarmTextStyle =
     TextStyle(color: Color(0xFF313131), fontSize: 12, fontFamily: 'Roboto');
+
+const secondaryAlarmTextStyle =
+    TextStyle(color: Color(0xFFE9E9E9), fontSize: 12, fontFamily: 'Roboto');
 
 const weekWheelerText =
     TextStyle(color: Color(0xFF007AFF), fontSize: 17, fontFamily: 'Roboto');

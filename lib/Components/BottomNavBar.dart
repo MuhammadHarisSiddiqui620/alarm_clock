@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final bool theme;
 
   const BottomNavBar({
     Key? key,
     required this.currentIndex,
     required this.onTap,
+    required this.theme,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Color(0XFFF0F0F0),
+      backgroundColor: theme ? Color(0XFF3D3D3D) : Color(0XFFF0F0F0),
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.bolt),
@@ -35,7 +37,8 @@ class BottomNavBar extends StatelessWidget {
       ],
       currentIndex: currentIndex,
       selectedItemColor: Color(0xFFFD0746),
-      unselectedItemColor: Colors.grey, // Color for inactive items
+      unselectedItemColor:
+          theme ? Color(0xFFFFFFFF) : Colors.grey, // Color for inactive items
       onTap: onTap,
     );
   }

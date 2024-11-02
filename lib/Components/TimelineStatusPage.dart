@@ -1,9 +1,7 @@
 import 'package:alarm_clock/Models/alarm_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:timelines/timelines.dart';
 
-import '../constants.dart';
 import 'StaticAlarm.dart';
 
 const kTileHeight = 50.0;

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:alarm/alarm.dart';
 import 'package:alarm_clock/Models/alarm_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class AlarmMethods {
   // Helper function to calculate the next alarm DateTime for the selected day
@@ -72,7 +73,37 @@ class AlarmMethods {
       );
 
       await Alarm.set(alarmSettings: alarmSettings);
+      Alarm.ringStream.stream.listen(
+        (_) => deleteAlarm(alarm.alarmId),
+      );
+
       debugPrint('Alarm set for $alarmDateTime');
+    }
+  }
+
+  Future<void> deleteAlarm(int alarmId) async {
+    debugPrint('ALARM METHODS Deleting alarm with ID: $alarmId');
+
+    // Open the box where alarms are stored
+    final box = Hive.box<AlarmModel>('alarm-db');
+
+    // Convert the box contents to a map and find the key for the matching alarmId
+    final Map<dynamic, AlarmModel> alarmsMap = box.toMap();
+    dynamic desiredKey;
+
+    // Search for the key associated with the given alarmId
+    alarmsMap.forEach((key, alarm) {
+      if (alarm.alarmId == alarmId) {
+        desiredKey = key;
+      }
+    });
+
+    // If a matching key is found, delete the alarm
+    if (desiredKey != null) {
+      await box.delete(desiredKey);
+      debugPrint('ALARM METHODS Alarm with ID: $alarmId deleted');
+    } else {
+      debugPrint('ALARM METHODS Alarm with ID: $alarmId not found');
     }
   }
 }

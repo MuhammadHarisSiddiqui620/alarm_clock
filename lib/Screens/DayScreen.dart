@@ -1,11 +1,13 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:alarm_clock/Components/Reusable_Alarm.dart';
+import 'package:alarm_clock/Screens/AlarmScreen.dart';
 import 'package:alarm_clock/Services/permission.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/alarm_model.dart';
 import '../constants.dart';
@@ -20,6 +22,7 @@ class DayScreen extends StatefulWidget {
 class _DayScreenState extends State<DayScreen> {
   late String todayDay;
   List<AlarmModel> alarms = [];
+  bool theme = false;
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _DayScreenState extends State<DayScreen> {
     }
     todayDay = DateFormat('EEEE').format(DateTime.now());
     _loadAlarms(); // Load alarms from Hive
+    getThemeValueFlag();
   }
 
   Future<void> _loadAlarms() async {
@@ -38,6 +42,19 @@ class _DayScreenState extends State<DayScreen> {
     setState(() {
       alarms = box.values.where((alarm) => alarm.alarmDay == todayDay).toList();
     });
+  }
+
+  Future<void> getThemeValueFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('selected_theme') != null) {
+      setState(() {
+        theme = prefs.getBool('selected_theme')!;
+      });
+    } else {
+      setState(() {
+        theme = false;
+      });
+    }
   }
 
   /// e.g Thursday
@@ -48,9 +65,10 @@ class _DayScreenState extends State<DayScreen> {
     debugPrint('selectedDayAlarms = ${selectedDayAlarms.length}');
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: 'Day'), // Use the custom AppBar
+        appBar:
+            CustomAppBar(title: 'Day', theme: theme), // Use the custom AppBar
         body: Container(
-          margin: EdgeInsets.symmetric(vertical: 25, horizontal: 16),
+          margin: EdgeInsets.symmetric(vertical: 25, horizontal: 20),
           child: Column(
             children: [
               Container(
@@ -60,38 +78,89 @@ class _DayScreenState extends State<DayScreen> {
                   children: [
                     Text(
                       todayDay,
-                      style: dayHeader,
+                      style: theme ? secondaryDayHeader : dayHeader,
                     ),
                   ],
                 ),
               ),
               Expanded(
-                child: selectedDayAlarms.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'images/no-alarm.svg',
-                              width: 100,
-                              height: 100,
+                child: RefreshIndicator(
+                    child: selectedDayAlarms.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'images/no-alarm.svg',
+                                  width: 100,
+                                  height: 100,
+                                  color: theme ? Colors.white : Colors.black,
+                                ),
+                                SizedBox(height: 21),
+                                Text(
+                                    "You don't have any active timers for today. You can create them in the Alarms screen",
+                                    textAlign: TextAlign.center,
+                                    style: theme
+                                        ? secondaryAppBarStyle
+                                        : appBarStyle),
+                                SizedBox(
+                                  height: 47,
+                                ),
+                                Container(
+                                  height: 57,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AlarmScreen()) //
+                                          );
+                                    },
+                                    child: Ink(
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topRight,
+                                          end: Alignment.bottomLeft,
+                                          colors: [
+                                            Color(0xFFFD0746),
+                                            Color(0xFFAD022B),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(6)),
+                                      ),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical:
+                                                12), // adjust padding if needed
+                                        child: const Text(
+                                          "Go to alarms",
+                                          style: secondaryAppBarStyle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 21),
-                            Text('You haven’t created alarms',
-                                style: appBarStyle),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        itemCount: selectedDayAlarms.length,
-                        itemBuilder: (context, index) {
-                          final alarm = selectedDayAlarms[index];
-                          return ReusableAlarm(alarm: alarm);
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(height: 20);
-                        },
-                      ),
+                          )
+                        : ListView.separated(
+                            itemCount: selectedDayAlarms.length,
+                            itemBuilder: (context, index) {
+                              final alarm = selectedDayAlarms[index];
+                              return ReusableAlarm(alarm: alarm);
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return SizedBox(height: 20);
+                            },
+                          ),
+                    onRefresh: _loadAlarms),
               ),
             ],
           ),

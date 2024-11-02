@@ -1,5 +1,4 @@
 import 'package:alarm_clock/Components/AlarmMethods.dart';
-import 'package:alarm_clock/Screens/NewAlarm.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/alarm_model.dart';
@@ -47,7 +46,7 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(widget.alarm.alarmName ?? 'No Name',
+                Text(widget.alarm.alarmName,
                     style: dayContainer), // Fallback for null alarmName
                 Switch(
                   // This bool value toggles the switch.

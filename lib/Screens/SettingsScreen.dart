@@ -1,10 +1,13 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 import '../Components/AlarmMethods.dart';
 import '../Components/SwitchState.dart';
+import '../Components/ThemeProvider.dart';
 import '../Models/alarm_model.dart';
 import '../constants.dart';
 
@@ -23,11 +26,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   AlarmMethods alarms = AlarmMethods();
   late final Box<AlarmModel> box;
   AlarmModel? alarm;
+  bool theme = false;
 
   @override
   void initState() {
     super.initState();
     box = Hive.box<AlarmModel>('alarm-db');
+    getThemeValueFlag();
 
     // Check if there are any items in the box before accessing index 0
     if (box.isNotEmpty) {
@@ -48,11 +53,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> setThemeValueFlag(bool theme) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('selected_theme', theme);
+  }
+
+  Future<void> getThemeValueFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('selected_theme') != null) {
+      setState(() {
+        theme = prefs.getBool('selected_theme')!;
+      });
+    } else {
+      setState(() {
+        theme = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: 'Settings'), // Use the custom AppBar
+        appBar: CustomAppBar(
+            title: 'Settings', theme: theme), // Use the custom AppBar
         body: Container(
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 26),
           child: Column(
@@ -62,14 +88,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Theme',
-                    style: appBarStyle,
+                    style: theme ? secondaryAppBarStyle : appBarStyle,
                   ),
-                  SwitchState(
+                  Switch(
+                    // This bool value toggles the switch.
+                    value: theme,
+                    thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.disabled)) {
+                          return Icon(
+                            Icons.sunny,
+                            color: Color(0xFFF3A736),
+                          ); // Return widget.thumbIcon directly
+                        }
+                        return Icon(
+                          Icons.sunny,
+                          color: Color(0xFFF3A736),
+                        ); // Return thumbIcon for other states as well
+                      },
+                    ),
                     activeColor: settingSwitch,
-                    trackOutlineColor: settingSwitch,
-                    thumbColor: (Colors.grey[300])!,
-                    inActiveTrackColor: Colors.white,
-                  ),
+                    inactiveTrackColor: Color(0xFF3A3A3A),
+                    trackOutlineWidth: MaterialStateProperty.all(0.7),
+                    thumbColor: MaterialStateProperty.all(Colors.grey[300]),
+                    onChanged: (bool value) {
+                      // This is called when the user toggles the switch.
+
+                      setState(() {
+                        theme = value;
+                        themeProvider.toggleTheme(value);
+                      });
+                    },
+                  )
                 ],
               ),
               SizedBox(
@@ -80,7 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Sound',
-                    style: appBarStyle,
+                    style: theme ? secondaryAppBarStyle : appBarStyle,
                   ),
                   SizedBox(
                     height: 16,
@@ -99,7 +149,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             }
                           });
                         },
-                        child: Icon(Icons.remove, color: Colors.black),
+                        child: Icon(Icons.remove,
+                            color: theme ? Colors.white : Colors.black),
                       ),
                       Expanded(
                         child: SliderTheme(
@@ -157,7 +208,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           );
                         },
-                        child: Icon(Icons.add, color: Colors.black),
+                        child: Icon(Icons.add,
+                            color: theme ? Colors.white : Colors.black),
                       ),
                     ],
                   ),
@@ -171,13 +223,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Vibration',
-                    style: appBarStyle,
+                    style: theme ? secondaryAppBarStyle : appBarStyle,
                   ),
                   Switch(
                       // This bool value toggles the switch.
                       value: vibration,
                       activeColor: settingSwitch,
-                      inactiveTrackColor: Colors.white,
+                      inactiveTrackColor:
+                          theme ? Color(0xFF131313) : Colors.white,
                       trackOutlineWidth: MaterialStateProperty.all(0.7),
                       trackOutlineColor:
                           MaterialStateProperty.all(settingSwitch),
@@ -218,7 +271,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Text(
                         'Calendor Event',
-                        style: appBarStyle,
+                        style: theme ? secondaryAppBarStyle : appBarStyle,
                       ),
                       Text(
                         'You can sync events \n from your device\'s calendar.',
@@ -230,7 +283,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     activeColor: settingSwitch,
                     trackOutlineColor: settingSwitch,
                     thumbColor: (Colors.grey[300])!,
-                    inActiveTrackColor: Colors.white,
+                    inActiveTrackColor:
+                        theme ? Color(0xFF131313) : Colors.white,
                   ),
                 ],
               ),
@@ -242,13 +296,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Day off',
-                    style: appBarStyle,
+                    style: theme ? secondaryAppBarStyle : appBarStyle,
                   ),
                   Switch(
                       // This bool value toggles the switch.
                       value: dayOff,
                       activeColor: settingSwitch,
-                      inactiveTrackColor: Colors.white,
+                      inactiveTrackColor:
+                          theme ? Color(0xFF131313) : Colors.white,
                       trackOutlineWidth: MaterialStateProperty.all(0.7),
                       trackOutlineColor:
                           MaterialStateProperty.all(settingSwitch),

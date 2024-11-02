@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Components/AlarmMethods.dart';
 import '../Components/CustomAppBar.dart';
@@ -32,23 +31,45 @@ class _NewAlarmState extends State<NewAlarm> {
   late DateTime selectedDateTime;
   int alarmId = 0;
   AlarmMethods alarms = AlarmMethods();
+  bool theme = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getThemeValueFlag();
+  }
 
   void stopAlarm(int? alarmId) {
     Alarm.stop(alarmId!);
+  }
+
+  Future<void> getThemeValueFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('selected_theme') != null) {
+      setState(() {
+        theme = prefs.getBool('selected_theme')!;
+      });
+    } else {
+      setState(() {
+        theme = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: 'New alarm'),
+        appBar: CustomAppBar(title: 'New alarm', theme: theme),
         body: Column(
           children: [
             Expanded(
               child: ListView(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 23),
                 children: [
-                  Text('Alarm name', style: newAlarmTextStyle),
+                  Text('Alarm name',
+                      style: theme ? secondaryAlarmTextStyle : AlarmTextStyle),
                   SizedBox(height: 2),
                   TextField(
                     style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16),
@@ -63,7 +84,8 @@ class _NewAlarmState extends State<NewAlarm> {
                     ),
                   ),
                   SizedBox(height: 23),
-                  Text('Time', style: newAlarmTextStyle),
+                  Text('Time',
+                      style: theme ? secondaryAlarmTextStyle : AlarmTextStyle),
                   SizedBox(height: 6),
                   Container(
                     width: 199,
@@ -95,7 +117,9 @@ class _NewAlarmState extends State<NewAlarm> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Temporary', style: appBarStyle),
+                          Text('Temporary',
+                              style:
+                                  theme ? secondaryAppBarStyle : appBarStyle),
                           Text(
                             'You can set a one-time alarm. \nIt will only go off once',
                             style: secondaryTextColor,
@@ -114,9 +138,11 @@ class _NewAlarmState extends State<NewAlarm> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Duration', style: appBarStyle),
+                      Text('Duration',
+                          style: theme ? secondaryAlarmTextStyle : appBarStyle),
                       SizedBox(height: 8),
                       WheelPicker(
+                        theme: theme,
                         onValueChanged: (hour, minute) {
                           setState(() {
                             selectedDurationHour = hour;
@@ -130,7 +156,8 @@ class _NewAlarmState extends State<NewAlarm> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Theme', style: appBarStyle),
+                      Text('Theme',
+                          style: theme ? secondaryAppBarStyle : appBarStyle),
                       SizedBox(height: 8),
                       Row(
                         children: [

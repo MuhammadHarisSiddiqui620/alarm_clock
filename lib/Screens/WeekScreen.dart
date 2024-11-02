@@ -3,6 +3,7 @@ import 'package:alarm_clock/Components/TimelineStatusPage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/alarm_model.dart';
 import '../constants.dart';
@@ -21,10 +22,26 @@ class _WeekScreenState extends State<WeekScreen> {
   // Store all alarms for the selected day
   List<AlarmModel> alarms = [];
 
+  late FixedExtentScrollController _scrollController;
+  bool theme = false;
+
+  // List of days of the week
+  final List<String> daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+
   @override
   void initState() {
     super.initState();
+    _scrollController = FixedExtentScrollController(initialItem: 0);
     _loadAlarms(); // Load alarms from Hive
+    getThemeValueFlag();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showModalBottomSheet(
@@ -43,8 +60,8 @@ class _WeekScreenState extends State<WeekScreen> {
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
                 colors: [
-                  Color(0xFFFFFFFF),
-                  Color(0xFF999999),
+                  theme ? Color(0xFF3A3A3A) : Color(0xFFFFFFFF),
+                  theme ? Color(0xFF131313) : Color(0xFF999999),
                 ],
               ),
             ),
@@ -57,7 +74,7 @@ class _WeekScreenState extends State<WeekScreen> {
                     children: [
                       Text(
                         DateFormat('d MMMM').format(DateTime.now()),
-                        style: bottomSheetTextheader,
+                        style: theme ? dayContainer : bottomSheetTextheader,
                       ),
                       SizedBox(height: 15),
 
@@ -73,11 +90,16 @@ class _WeekScreenState extends State<WeekScreen> {
                                 size: 12.0,
                               ),
                               SizedBox(width: 10),
-                              Text('Free time', style: bottomSheetTexts),
+                              Text('Free time',
+                                  style: theme
+                                      ? secondaryAppBarStyle
+                                      : bottomSheetTexts),
                             ],
                           ),
                           Text('1h 12m',
-                              style: bottomSheetText), // Show calculated time
+                              style: theme
+                                  ? secondaryAppBarStyle
+                                  : bottomSheetText), // Show calculated time
                         ],
                       ),
 
@@ -111,12 +133,15 @@ class _WeekScreenState extends State<WeekScreen> {
                                     ),
                                     SizedBox(width: 10),
                                     Text(alarm.alarmName,
-                                        style: bottomSheetTexts),
+                                        style: theme
+                                            ? secondaryAppBarStyle
+                                            : bottomSheetTexts),
                                   ],
                                 ),
                                 Text(timeFormat,
-                                    style:
-                                        bottomSheetText), // Show calculated time
+                                    style: theme
+                                        ? secondaryAppBarStyle
+                                        : bottomSheetText), // Show calculated time
                               ],
                             ),
                           );
@@ -133,6 +158,12 @@ class _WeekScreenState extends State<WeekScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadAlarms() async {
     var box = Hive.box<AlarmModel>('alarm-db');
     setState(() {
@@ -141,10 +172,21 @@ class _WeekScreenState extends State<WeekScreen> {
     });
   }
 
+  Future<void> getThemeValueFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('selected_theme') != null) {
+      setState(() {
+        theme = prefs.getBool('selected_theme')!;
+      });
+    } else {
+      setState(() {
+        theme = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     // Get alarms for the selected day
     List<AlarmModel> selectedDayAlarms = alarms.toList();
 
@@ -152,74 +194,56 @@ class _WeekScreenState extends State<WeekScreen> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: 'Week'), // Use the custom AppBar
+        appBar:
+            CustomAppBar(title: 'Week', theme: theme), // Use the custom AppBar
         body: Container(
           margin: EdgeInsets.symmetric(vertical: 25, horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Horizontal ListView for days of the week
-              Container(
-                height: 50,
-                margin: EdgeInsets.only(
-                    left: screenWidth * 0.5 - 50), // 50% of screen width
-                child: ListView(
-                  scrollDirection:
-                      Axis.horizontal, // Enable horizontal scrolling
-                  children: [
-                    getDayWidget('Monday'),
-                    SizedBox(
-                      width: 20,
+              SizedBox(
+                height: 25,
+                child: RotatedBox(
+                  quarterTurns: -1,
+                  child: ListWheelScrollView.useDelegate(
+                    controller: _scrollController,
+                    itemExtent: 120,
+                    physics: FixedExtentScrollPhysics(),
+                    onSelectedItemChanged: (index) {
+                      setState(() {
+                        selectedDay = daysOfWeek[index];
+                        _loadAlarms();
+                      });
+                    },
+                    childDelegate: ListWheelChildBuilderDelegate(
+                      builder: (context, index) {
+                        return Center(
+                          child: RotatedBox(
+                            quarterTurns: -3,
+                            child: Text(
+                              daysOfWeek[index],
+                              style: TextStyle(
+                                color: selectedDay == daysOfWeek[index]
+                                    ? theme
+                                        ? Color(0xFFFFFFFF)
+                                        : Color(0xFF131313)
+                                    : Color(0xFF7E7E7E),
+                                fontFamily: 'Roboto',
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      childCount: daysOfWeek.length,
                     ),
-                    getDayWidget('Tuesday'),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    getDayWidget('Wednesday'),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    getDayWidget('Thursday'),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    getDayWidget('Friday'),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    getDayWidget('Saturday'),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    getDayWidget('Sunday'),
-                  ],
+                  ),
                 ),
               ),
+              SizedBox(height: 20),
               TimelineStatusPage(alarms: selectedDayAlarms),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Widget for each day button in the horizontal list
-  GestureDetector getDayWidget(String day) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedDay = day;
-          _loadAlarms(); // Load alarms when a day is selected
-        });
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Text(
-          day,
-          style: TextStyle(
-            color: selectedDay == day ? Color(0xFF131313) : Color(0xFF7E7E7E),
-            fontFamily: 'Roboto',
-            fontSize: 17,
           ),
         ),
       ),
