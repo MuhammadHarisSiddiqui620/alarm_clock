@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/alarm_model.dart';
 import '../constants.dart';
+import '../main.dart';
 
 class DayScreen extends StatefulWidget {
   const DayScreen({super.key});
@@ -114,11 +115,8 @@ class _DayScreenState extends State<DayScreen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AlarmScreen()) //
-                                          );
+                                      HomeScreen.of(context)
+                                          ?.setSelectedIndex(1);
                                     },
                                     child: Ink(
                                       decoration: const BoxDecoration(

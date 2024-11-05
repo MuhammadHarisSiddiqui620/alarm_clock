@@ -68,6 +68,10 @@ class HomeScreen extends StatefulWidget {
     required this.theme,
   }) : super(key: key);
 
+  static _HomeScreenState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_HomeScreenState>();
+  }
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -80,12 +84,19 @@ class _HomeScreenState extends State<HomeScreen> {
     DayScreen(),
     AlarmScreen(),
     WeekScreen(),
-    SettingsScreen()
+    SettingsScreen(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedIndex =
+          index; // Update the selected index when tapping a bottom nav item
+    });
+  }
+
+  void setSelectedIndex(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index from DayScreen
     });
   }
 
