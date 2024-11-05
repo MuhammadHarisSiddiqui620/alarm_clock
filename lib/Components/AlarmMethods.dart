@@ -57,12 +57,20 @@ class AlarmMethods {
       final alarmDateTime = getNextAlarmDateTime(
           alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
 
+      // Calculate the alarm duration in seconds.
+      final double totalDurationSeconds =
+          (alarm.durationHour * 60 * 60) + (alarm.durationMinute * 60);
+
+      debugPrint("AlarmMethods totalDuration= ${totalDurationSeconds}");
+
       final alarmSettings = AlarmSettings(
         id: alarm.alarmId,
+        fadeDuration: totalDurationSeconds,
         dateTime: alarmDateTime,
         assetAudioPath: 'assets/audio1.mp3',
         volume: alarm.volume,
         vibrate: alarm.vibrate,
+        loopAudio: false,
         notificationSettings: NotificationSettings(
           stopButton: 'Stop',
           title: 'Alarm',

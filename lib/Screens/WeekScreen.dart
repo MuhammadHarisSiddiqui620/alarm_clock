@@ -42,120 +42,6 @@ class _WeekScreenState extends State<WeekScreen> {
     _scrollController = FixedExtentScrollController(initialItem: 0);
     _loadAlarms(); // Load alarms from Hive
     getThemeValueFlag();
-
-/*    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true, // Ensures the bottom sheet wraps content size
-        builder: (BuildContext context) {
-          return Container(
-            padding: EdgeInsets.all(
-                16), // Add padding to avoid content touching edges
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  theme ? Color(0xFF3A3A3A) : Color(0xFFFFFFFF),
-                  theme ? Color(0xFF131313) : Color(0xFF999999),
-                ],
-              ),
-            ),
-            child: Wrap(
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('d MMMM').format(DateTime.now()),
-                        style: theme ? dayContainer : bottomSheetTextheader,
-                      ),
-                      SizedBox(height: 15),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.circle,
-                                color: Color(
-                                    0xFF959595), // Set icon color from alarm
-                                size: 12.0,
-                              ),
-                              SizedBox(width: 10),
-                              Text('Free time',
-                                  style: theme
-                                      ? secondaryAppBarStyle
-                                      : bottomSheetTexts),
-                            ],
-                          ),
-                          Text('1h 12m',
-                              style: theme
-                                  ? secondaryAppBarStyle
-                                  : bottomSheetText), // Show calculated time
-                        ],
-                      ),
-
-                      SizedBox(height: 15),
-
-                      // ListView.builder for alarms
-                      ListView.builder(
-                        shrinkWrap: true, // Prevents infinite height
-                        itemCount: alarms.length,
-                        itemBuilder: (context, index) {
-                          final alarm = alarms[index];
-                          // Calculate remaining time
-                          int totalMinutes = (alarm.alarmHour * 60 +
-                                  alarm.alarmMinute) -
-                              (alarm.durationHour * 60 + alarm.durationMinute);
-                          String timeFormat =
-                              '${totalMinutes ~/ 60}h ${totalMinutes % 60}M';
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: Color(int.parse(alarm
-                                          .alarmColor)), // Set icon color from alarm
-                                      size: 12.0,
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(alarm.alarmName,
-                                        style: theme
-                                            ? secondaryAppBarStyle
-                                            : bottomSheetTexts),
-                                  ],
-                                ),
-                                Text(timeFormat,
-                                    style: theme
-                                        ? secondaryAppBarStyle
-                                        : bottomSheetText), // Show calculated time
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    });*/
   }
 
   @override
@@ -190,12 +76,31 @@ class _WeekScreenState extends State<WeekScreen> {
     // Get alarms for the selected day
     List<AlarmModel> selectedDayAlarms = alarms.toList();
 
-    debugPrint('selectedDayAlarms = $selectedDayAlarms');
+    // Calculate total alarm time in minutes
+    int totalAlarmTimeInMinutes = selectedDayAlarms.fold(0,
+        (sum, alarm) => sum + (alarm.durationHour * 60) + alarm.durationMinute);
+
+    // Calculate free time in minutes
+    int freeTimeInMinutes =
+        1440 - totalAlarmTimeInMinutes; // 1440 minutes in a day
+
+    // Convert free time back to hours and minutes
+    int freeTimeHours = freeTimeInMinutes ~/ 60;
+    int freeTimeMinutes = freeTimeInMinutes % 60;
+    // Conditional display of free time
+    String freeTimeText = '';
+    if (freeTimeHours > 0) {
+      freeTimeText += '${freeTimeHours}h';
+    }
+    if (freeTimeMinutes > 0) {
+      if (freeTimeText.isNotEmpty)
+        freeTimeText += ' '; // Add space if hours are also displayed
+      freeTimeText += '${freeTimeMinutes}m';
+    }
 
     return SafeArea(
       child: Scaffold(
-        appBar:
-            CustomAppBar(title: 'Week', theme: theme), // Use the custom AppBar
+        appBar: CustomAppBar(title: 'Week', theme: theme),
         body: Column(
           children: [
             Expanded(
@@ -204,7 +109,6 @@ class _WeekScreenState extends State<WeekScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Horizontal ListView for days of the week
                     SizedBox(
                       height: 25,
                       child: RotatedBox(
@@ -244,7 +148,12 @@ class _WeekScreenState extends State<WeekScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 8),
+                    Divider(
+                      color: Color(0xFFB1B1B1),
+                      thickness: 1,
+                    ),
+                    SizedBox(height: 27),
                     TimelineStatusPage(alarms: selectedDayAlarms),
                   ],
                 ),
@@ -254,7 +163,6 @@ class _WeekScreenState extends State<WeekScreen> {
               width: double.infinity,
               height: 203.0,
               decoration: BoxDecoration(
-                color: Colors.red,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(22.0),
                   topLeft: Radius.circular(22.0),
@@ -263,8 +171,8 @@ class _WeekScreenState extends State<WeekScreen> {
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
                   colors: [
-                    Color(0xFF999999),
-                    Color(0xFFFFFFFF),
+                    theme ? Color(0xFF3A3A3A) : Color(0xFFFFFFFF),
+                    theme ? Color(0xFF131313) : Color(0xFF999999),
                   ],
                 ),
               ),
@@ -291,8 +199,7 @@ class _WeekScreenState extends State<WeekScreen> {
                                 children: [
                                   Icon(
                                     Icons.circle,
-                                    color: Color(
-                                        0xFF959595), // Set icon color from alarm
+                                    color: Color(0xFF959595),
                                     size: 12.0,
                                   ),
                                   SizedBox(width: 10),
@@ -302,10 +209,10 @@ class _WeekScreenState extends State<WeekScreen> {
                                           : bottomSheetTexts),
                                 ],
                               ),
-                              Text('1h 12m',
+                              Text(freeTimeText,
                                   style: theme
                                       ? secondaryAppBarStyle
-                                      : bottomSheetText), // Show calculated time
+                                      : bottomSheetText),
                             ],
                           ),
 
@@ -313,44 +220,48 @@ class _WeekScreenState extends State<WeekScreen> {
 
                           // ListView.builder for alarms
                           ListView.builder(
-                            shrinkWrap: true, // Prevents infinite height
+                            shrinkWrap: true,
                             itemCount: alarms.length,
                             itemBuilder: (context, index) {
                               final alarm = alarms[index];
-                              // Calculate remaining time
-                              int totalMinutes =
-                                  (alarm.alarmHour * 60 + alarm.alarmMinute) -
-                                      (alarm.durationHour * 60 +
-                                          alarm.durationMinute);
-                              String timeFormat =
-                                  '${totalMinutes ~/ 60}h ${totalMinutes % 60}M';
+
+                              String alarmDuration = "";
+                              if (alarm.durationHour != 0) {
+                                alarmDuration = "${alarm.durationHour}h";
+                              } else {
+                                alarmDuration = "${alarm.durationMinute}m";
+                              }
 
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                child: Column(
                                   children: [
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Icon(
-                                          Icons.circle,
-                                          color: Color(int.parse(alarm
-                                              .alarmColor)), // Set icon color from alarm
-                                          size: 12.0,
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.circle,
+                                              color: Color(
+                                                  int.parse(alarm.alarmColor)),
+                                              size: 12.0,
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(alarm.alarmName,
+                                                style: theme
+                                                    ? secondaryAppBarStyle
+                                                    : bottomSheetTexts),
+                                          ],
                                         ),
-                                        SizedBox(width: 10),
-                                        Text(alarm.alarmName,
+                                        Text(alarmDuration,
                                             style: theme
                                                 ? secondaryAppBarStyle
-                                                : bottomSheetTexts),
+                                                : bottomSheetText),
                                       ],
                                     ),
-                                    Text(timeFormat,
-                                        style: theme
-                                            ? secondaryAppBarStyle
-                                            : bottomSheetText), // Show calculated time
                                   ],
                                 ),
                               );

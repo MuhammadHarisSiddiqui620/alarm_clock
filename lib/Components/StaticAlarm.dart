@@ -21,8 +21,25 @@ class _StaticAlarmState extends State<StaticAlarm> {
     // Provide a fallback value if activeColor is null
     Color backgroundColor = Color(int.parse(widget.alarm.alarmColor));
 
-    debugPrint(
-        'ReusableAlarm Widget build isEnabled= ${widget.alarm.isEnabled}');
+    // Calculate start and end times
+    DateTime startTime = DateTime(
+      0,
+      0,
+      0,
+      widget.alarm.alarmHour,
+      widget.alarm.alarmMinute,
+    );
+    Duration duration = Duration(
+      hours: widget.alarm.durationHour,
+      minutes: widget.alarm.durationMinute,
+    );
+    DateTime endTime = startTime.add(duration);
+
+    // Format the time values
+    String startTimeFormatted =
+        '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+    String endTimeFormatted =
+        '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
 
     return Container(
       constraints: BoxConstraints(
@@ -31,7 +48,7 @@ class _StaticAlarmState extends State<StaticAlarm> {
       ),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(6.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
         padding:
@@ -48,24 +65,16 @@ class _StaticAlarmState extends State<StaticAlarm> {
             ),
             Row(
               children: [
-                Text(widget.alarm.alarmHour.toString(),
-                    style: dayContainerTimer), // Fallback for null hour
-                Text(':', style: dayContainerTimer),
-                Text(widget.alarm.alarmMinute.toString(),
-                    style: dayContainerTimer),
+                Text(startTimeFormatted, style: dayContainerTimer),
                 SizedBox(width: 10),
-                Divider(
-                  thickness: 30,
-                  height: 36,
-                  color: Colors.white,
+                Container(
+                  color: Colors.white, // Set the divider color
+                  width: 12.0, // Thickness of the divider
+                  height: 5.0, // Height of the divider
                 ),
                 SizedBox(width: 10),
-                Text(widget.alarm.durationHour.toString(),
-                    style: dayContainerTimer), // Fallback for null hour
-                Text(':', style: dayContainerTimer),
-                Text(widget.alarm.durationMinute.toString(),
-                    style: dayContainerTimer),
-// Fallback for null minute
+                // Display end time
+                Text(endTimeFormatted, style: dayContainerTimer),
               ],
             ),
           ],

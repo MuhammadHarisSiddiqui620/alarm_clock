@@ -28,6 +28,19 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
     debugPrint(
         'ReusableAlarm Widget build isEnabled= ${widget.alarm.isEnabled}');
 
+    // Calculate start and end times
+    DateTime startTime = DateTime(
+      0,
+      0,
+      0,
+      widget.alarm.alarmHour,
+      widget.alarm.alarmMinute,
+    );
+
+    // Format the time values
+    String startTimeFormatted =
+        '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+
     return Container(
       constraints: BoxConstraints(
         minHeight: 105,
@@ -80,11 +93,8 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
             ),
             Row(
               children: [
-                Text(widget.alarm.alarmHour.toString(),
+                Text(startTimeFormatted,
                     style: dayContainerTimer), // Fallback for null hour
-                Text(':', style: dayContainerTimer),
-                Text(widget.alarm.alarmMinute.toString(),
-                    style: dayContainerTimer), // Fallback for null minute
               ],
             ),
           ],

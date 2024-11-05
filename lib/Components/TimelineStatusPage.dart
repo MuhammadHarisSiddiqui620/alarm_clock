@@ -2,6 +2,7 @@ import 'package:alarm_clock/Models/alarm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:timelines/timelines.dart';
 
+import '../constants.dart';
 import 'StaticAlarm.dart';
 
 const kTileHeight = 50.0;
@@ -49,35 +50,45 @@ class _Timeline2 extends StatelessWidget {
     );
 
     if (alarms.isEmpty) {
-      return Flexible(
-        child: Timeline.tileBuilder(
-          theme: TimelineThemeData(
-            nodePosition: 0,
-            color: Color(0xffc2c5c9),
-            connectorTheme: ConnectorThemeData(
-              thickness: 3.0,
+      return Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('00:00', style: weekHeaders),
+            Flexible(
+              child: Timeline.tileBuilder(
+                shrinkWrap: true,
+                theme: TimelineThemeData(
+                  nodePosition: 0,
+                  color: Color(0xffc2c5c9),
+                  connectorTheme: ConnectorThemeData(
+                    thickness: 3.0,
+                  ),
+                ),
+                builder: TimelineTileBuilder.connected(
+                  indicatorBuilder: (context, index) {
+                    return DotIndicator(
+                      size: 8,
+                      color: null,
+                    );
+                  },
+                  connectorBuilder: (_, index, connectorType) {
+                    return SolidLineConnector(
+                      indent: connectorType == ConnectorType.start ? 0 : 100,
+                      endIndent: connectorType == ConnectorType.end ? 0 : 100,
+                      color: null,
+                    );
+                  },
+                  contentsBuilder: (_, __) => _EmptyContents(),
+                  itemCount: 5,
+                  itemExtentBuilder: (_, __) {
+                    return 20;
+                  }, // Only one item for the empty state
+                ),
+              ),
             ),
-          ),
-          padding: EdgeInsets.symmetric(vertical: 10.0), // Reduced top padding
-          builder: TimelineTileBuilder.connected(
-            indicatorBuilder: (context, index) {
-              return DotIndicator(
-                color: null,
-              );
-            },
-            connectorBuilder: (_, index, connectorType) {
-              return SolidLineConnector(
-                indent: connectorType == ConnectorType.start ? 0 : 100,
-                endIndent: connectorType == ConnectorType.end ? 0 : 100,
-                color: null,
-              );
-            },
-            contentsBuilder: (_, __) => _EmptyContents(),
-            itemCount: 5,
-            itemExtentBuilder: (_, __) {
-              return 40;
-            }, // Only one item for the empty state
-          ),
+            Text('23:59', style: weekHeaders),
+          ],
         ),
       );
     }
@@ -90,10 +101,10 @@ class _Timeline2 extends StatelessWidget {
             thickness: 3.0,
           ),
         ),
-        padding: EdgeInsets.only(top: 20.0),
         builder: TimelineTileBuilder.connected(
           indicatorBuilder: (context, index) {
             return DotIndicator(
+              size: 8,
               color: data[index] == _TimelineStatus.done
                   ? Color(0xff193fcc)
                   : null,
@@ -143,10 +154,6 @@ class _AlarmContents extends StatelessWidget {
           )
         : Container(
             margin: EdgeInsets.only(left: 10.0, top: 15, bottom: 15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2.0),
-              color: Color(0xffe6e7e9), // Same background color for consistency
-            ),
             child: StaticAlarm(alarm: alarm), // Display the individual alarm
           );
   }
@@ -155,14 +162,7 @@ class _AlarmContents extends StatelessWidget {
 class _EmptyContents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 10.0),
-      height: 10.0,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2.0),
-        color: Color(0xffe6e7e9),
-      ),
-    );
+    return Container();
   }
 }
 
