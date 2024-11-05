@@ -43,7 +43,7 @@ class _WeekScreenState extends State<WeekScreen> {
     _loadAlarms(); // Load alarms from Hive
     getThemeValueFlag();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+/*    WidgetsBinding.instance.addPostFrameCallback((_) {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true, // Ensures the bottom sheet wraps content size
@@ -155,7 +155,7 @@ class _WeekScreenState extends State<WeekScreen> {
           );
         },
       );
-    });
+    });*/
   }
 
   @override
@@ -196,55 +196,174 @@ class _WeekScreenState extends State<WeekScreen> {
       child: Scaffold(
         appBar:
             CustomAppBar(title: 'Week', theme: theme), // Use the custom AppBar
-        body: Container(
-          margin: EdgeInsets.symmetric(vertical: 25, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Horizontal ListView for days of the week
-              SizedBox(
-                height: 25,
-                child: RotatedBox(
-                  quarterTurns: -1,
-                  child: ListWheelScrollView.useDelegate(
-                    controller: _scrollController,
-                    itemExtent: 120,
-                    physics: FixedExtentScrollPhysics(),
-                    onSelectedItemChanged: (index) {
-                      setState(() {
-                        selectedDay = daysOfWeek[index];
-                        _loadAlarms();
-                      });
-                    },
-                    childDelegate: ListWheelChildBuilderDelegate(
-                      builder: (context, index) {
-                        return Center(
-                          child: RotatedBox(
-                            quarterTurns: -3,
-                            child: Text(
-                              daysOfWeek[index],
-                              style: TextStyle(
-                                color: selectedDay == daysOfWeek[index]
-                                    ? theme
-                                        ? Color(0xFFFFFFFF)
-                                        : Color(0xFF131313)
-                                    : Color(0xFF7E7E7E),
-                                fontFamily: 'Roboto',
-                                fontSize: 17,
-                              ),
-                            ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.only(right: 16, left: 16, top: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Horizontal ListView for days of the week
+                    SizedBox(
+                      height: 25,
+                      child: RotatedBox(
+                        quarterTurns: -1,
+                        child: ListWheelScrollView.useDelegate(
+                          controller: _scrollController,
+                          itemExtent: 120,
+                          physics: FixedExtentScrollPhysics(),
+                          onSelectedItemChanged: (index) {
+                            setState(() {
+                              selectedDay = daysOfWeek[index];
+                              _loadAlarms();
+                            });
+                          },
+                          childDelegate: ListWheelChildBuilderDelegate(
+                            builder: (context, index) {
+                              return Center(
+                                child: RotatedBox(
+                                  quarterTurns: -3,
+                                  child: Text(
+                                    daysOfWeek[index],
+                                    style: TextStyle(
+                                      color: selectedDay == daysOfWeek[index]
+                                          ? theme
+                                              ? Color(0xFFFFFFFF)
+                                              : Color(0xFF131313)
+                                          : Color(0xFF7E7E7E),
+                                      fontFamily: 'Roboto',
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            childCount: daysOfWeek.length,
                           ),
-                        );
-                      },
-                      childCount: daysOfWeek.length,
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 20),
+                    TimelineStatusPage(alarms: selectedDayAlarms),
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
-              TimelineStatusPage(alarms: selectedDayAlarms),
-            ],
-          ),
+            ),
+            Container(
+              width: double.infinity,
+              height: 203.0,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(22.0),
+                  topLeft: Radius.circular(22.0),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Color(0xFF999999),
+                    Color(0xFFFFFFFF),
+                  ],
+                ),
+              ),
+              padding: EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Wrap(
+                  children: [
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            DateFormat('d MMMM').format(DateTime.now()),
+                            style: theme ? dayContainer : bottomSheetTextheader,
+                          ),
+                          SizedBox(height: 15),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.circle,
+                                    color: Color(
+                                        0xFF959595), // Set icon color from alarm
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text('Free time',
+                                      style: theme
+                                          ? secondaryAppBarStyle
+                                          : bottomSheetTexts),
+                                ],
+                              ),
+                              Text('1h 12m',
+                                  style: theme
+                                      ? secondaryAppBarStyle
+                                      : bottomSheetText), // Show calculated time
+                            ],
+                          ),
+
+                          SizedBox(height: 15),
+
+                          // ListView.builder for alarms
+                          ListView.builder(
+                            shrinkWrap: true, // Prevents infinite height
+                            itemCount: alarms.length,
+                            itemBuilder: (context, index) {
+                              final alarm = alarms[index];
+                              // Calculate remaining time
+                              int totalMinutes =
+                                  (alarm.alarmHour * 60 + alarm.alarmMinute) -
+                                      (alarm.durationHour * 60 +
+                                          alarm.durationMinute);
+                              String timeFormat =
+                                  '${totalMinutes ~/ 60}h ${totalMinutes % 60}M';
+
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.circle,
+                                          color: Color(int.parse(alarm
+                                              .alarmColor)), // Set icon color from alarm
+                                          size: 12.0,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(alarm.alarmName,
+                                            style: theme
+                                                ? secondaryAppBarStyle
+                                                : bottomSheetTexts),
+                                      ],
+                                    ),
+                                    Text(timeFormat,
+                                        style: theme
+                                            ? secondaryAppBarStyle
+                                            : bottomSheetText), // Show calculated time
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

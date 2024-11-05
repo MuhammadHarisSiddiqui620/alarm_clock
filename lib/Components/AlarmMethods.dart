@@ -74,36 +74,28 @@ class AlarmMethods {
 
       await Alarm.set(alarmSettings: alarmSettings);
       Alarm.ringStream.stream.listen(
-        (_) => deleteAlarm(alarm.alarmId),
+        (_) => isEnabledChanged(alarm.alarmId),
       );
 
       debugPrint('Alarm set for $alarmDateTime');
     }
   }
 
-  Future<void> deleteAlarm(int alarmId) async {
-    debugPrint('ALARM METHODS Deleting alarm with ID: $alarmId');
-
+  Future<void> isEnabledChanged(int alarmId) async {
     // Open the box where alarms are stored
     final box = Hive.box<AlarmModel>('alarm-db');
 
-    // Convert the box contents to a map and find the key for the matching alarmId
-    final Map<dynamic, AlarmModel> alarmsMap = box.toMap();
-    dynamic desiredKey;
+    // Iterate through each alarm in the box and print its values
+    for (var alarm in box.values) {
+      // Await the future returned by Alarm.isRinging
+      bool isRinging = await Alarm.isRinging(alarm.alarmId);
+      debugPrint('ALARM METHODS Alarm ID Ringing: $isRinging');
 
-    // Search for the key associated with the given alarmId
-    alarmsMap.forEach((key, alarm) {
-      if (alarm.alarmId == alarmId) {
-        desiredKey = key;
+      if (isRinging == true) {
+        // If the alarm is found, update the isEnabled field
+        alarm.isEnabled = false;
+        await alarm.save();
       }
-    });
-
-    // If a matching key is found, delete the alarm
-    if (desiredKey != null) {
-      await box.delete(desiredKey);
-      debugPrint('ALARM METHODS Alarm with ID: $alarmId deleted');
-    } else {
-      debugPrint('ALARM METHODS Alarm with ID: $alarmId not found');
     }
   }
 }

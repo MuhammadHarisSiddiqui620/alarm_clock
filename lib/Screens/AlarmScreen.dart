@@ -47,9 +47,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Register this screen with the RouteObserver
+    ModalRoute.of(context)!.addScopedWillPopCallback(_onPop);
+  }
+
+  Future<bool> _onPop() async {
+    await _loadAlarms();
+    return true;
   }
 
   Future<void> _loadAlarms() async {
@@ -71,6 +77,17 @@ class _AlarmScreenState extends State<AlarmScreen> {
         theme = false;
       });
     }
+  }
+
+  Future<void> _navigateToNewAlarm() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewAlarm(selectedDay: selectedDay),
+      ),
+    );
+    // Refresh alarms when coming back to AlarmScreen
+    _loadAlarms();
   }
 
   @override
@@ -205,15 +222,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  NewAlarm(selectedDay: selectedDay),
-                            ),
-                          );
-                        },
+                        onPressed: _navigateToNewAlarm,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
