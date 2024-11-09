@@ -60,9 +60,26 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   Future<void> _loadAlarms() async {
     var box = Hive.box<AlarmModel>('alarm-db');
+    DateTime now = DateTime.now();
+
     setState(() {
       alarms =
           box.values.where((alarm) => alarm.alarmDay == selectedDay).toList();
+
+      // Sort by time, placing alarms after the current time first
+      alarms.sort((a, b) {
+        int aTime = a.alarmHour * 60 + a.alarmMinute;
+        int bTime = b.alarmHour * 60 + b.alarmMinute;
+        int currentTime = now.hour * 60 + now.minute;
+
+        bool aIsAfterNow = aTime >= currentTime;
+        bool bIsAfterNow = bTime >= currentTime;
+
+        if (aIsAfterNow && !bIsAfterNow) return -1;
+        if (!aIsAfterNow && bIsAfterNow) return 1;
+
+        return aTime.compareTo(bTime);
+      });
     });
   }
 

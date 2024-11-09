@@ -71,7 +71,9 @@ class _NewAlarmState extends State<NewAlarm> {
                       style: theme ? secondaryAlarmTextStyle : AlarmTextStyle),
                   SizedBox(height: 2),
                   TextField(
-                    style: TextStyle(color: Color(0xFF1E1E1E), fontSize: 16),
+                    style: TextStyle(
+                        color: theme ? Color(0xFFEEEEEE) : Color(0xFF1E1E1E),
+                        fontSize: 16),
                     onChanged: (value) {
                       setState(() {
                         alarmName = value;
@@ -210,6 +212,12 @@ class _NewAlarmState extends State<NewAlarm> {
 
                         // Access the 'alarms' box and add the new alarm
                         final box = Hive.box<AlarmModel>('alarm-db');
+                        for (var alarm in box.values) {
+                          debugPrint(
+                              'New Alarm alarm.vibrate= ${alarm.vibrate}');
+                          debugPrint('New Alarm alarm.volume= ${alarm.volume}');
+                        }
+
                         alarmId = await box.add(alarm) + 1;
 
                         alarm.alarmId = alarmId;

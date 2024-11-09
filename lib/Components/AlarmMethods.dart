@@ -61,7 +61,8 @@ class AlarmMethods {
       final double totalDurationSeconds =
           (alarm.durationHour * 60 * 60) + (alarm.durationMinute * 60);
 
-      debugPrint("AlarmMethods totalDuration= ${totalDurationSeconds}");
+      debugPrint("AlarmMethods alarm.volume= ${alarm.volume}");
+      debugPrint("AlarmMethods alarm.vibrate= ${alarm.vibrate}");
 
       final alarmSettings = AlarmSettings(
         id: alarm.alarmId,

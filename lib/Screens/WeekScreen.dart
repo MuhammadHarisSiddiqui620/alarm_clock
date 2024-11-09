@@ -52,9 +52,26 @@ class _WeekScreenState extends State<WeekScreen> {
 
   Future<void> _loadAlarms() async {
     var box = Hive.box<AlarmModel>('alarm-db');
+    DateTime now = DateTime.now();
+
     setState(() {
       alarms =
           box.values.where((alarm) => alarm.alarmDay == selectedDay).toList();
+
+      // Sort by time, placing alarms after the current time first
+      alarms.sort((a, b) {
+        int aTime = a.alarmHour * 60 + a.alarmMinute;
+        int bTime = b.alarmHour * 60 + b.alarmMinute;
+        int currentTime = now.hour * 60 + now.minute;
+
+        bool aIsAfterNow = aTime >= currentTime;
+        bool bIsAfterNow = bTime >= currentTime;
+
+        if (aIsAfterNow && !bIsAfterNow) return -1;
+        if (!aIsAfterNow && bIsAfterNow) return 1;
+
+        return aTime.compareTo(bTime);
+      });
     });
   }
 
@@ -178,99 +195,91 @@ class _WeekScreenState extends State<WeekScreen> {
               ),
               padding: EdgeInsets.all(16),
               child: SingleChildScrollView(
-                child: Wrap(
-                  children: [
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DateFormat('d MMMM').format(DateTime.now()),
+                        style: theme ? dayContainer : bottomSheetTextheader,
+                      ),
+                      SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            DateFormat('d MMMM').format(DateTime.now()),
-                            style: theme ? dayContainer : bottomSheetTextheader,
-                          ),
-                          SizedBox(height: 15),
-
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    color: Color(0xFF959595),
-                                    size: 12.0,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text('Free time',
-                                      style: theme
-                                          ? secondaryAppBarStyle
-                                          : bottomSheetTexts),
-                                ],
+                              Icon(
+                                Icons.circle,
+                                color: Color(0xFF959595),
+                                size: 12.0,
                               ),
-                              Text(freeTimeText,
-                                  style: theme
-                                      ? secondaryAppBarStyle
-                                      : bottomSheetText),
+                              SizedBox(width: 10),
+                              Text(
+                                'Free time',
+                                style: theme
+                                    ? secondaryAppBarStyle
+                                    : bottomSheetTexts,
+                              ),
                             ],
                           ),
-
-                          SizedBox(height: 15),
-
-                          // ListView.builder for alarms
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: alarms.length,
-                            itemBuilder: (context, index) {
-                              final alarm = alarms[index];
-
-                              String alarmDuration = "";
-                              if (alarm.durationHour != 0) {
-                                alarmDuration = "${alarm.durationHour}h";
-                              } else {
-                                alarmDuration = "${alarm.durationMinute}m";
-                              }
-
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.circle,
-                                              color: Color(
-                                                  int.parse(alarm.alarmColor)),
-                                              size: 12.0,
-                                            ),
-                                            SizedBox(width: 10),
-                                            Text(alarm.alarmName,
-                                                style: theme
-                                                    ? secondaryAppBarStyle
-                                                    : bottomSheetTexts),
-                                          ],
-                                        ),
-                                        Text(alarmDuration,
-                                            style: theme
-                                                ? secondaryAppBarStyle
-                                                : bottomSheetText),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                          Text(
+                            freeTimeText,
+                            style:
+                                theme ? secondaryAppBarStyle : bottomSheetText,
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 8),
+
+                      // ListView.builder for alarms
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: alarms.length,
+                        itemBuilder: (context, index) {
+                          final alarm = alarms[index];
+
+                          String alarmDuration = alarm.durationHour != 0
+                              ? "${alarm.durationHour}h"
+                              : "${alarm.durationMinute}m";
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      color: Color(int.parse(alarm.alarmColor)),
+                                      size: 12.0,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      alarm.alarmName,
+                                      style: theme
+                                          ? secondaryAppBarStyle
+                                          : bottomSheetTexts,
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  alarmDuration,
+                                  style: theme
+                                      ? secondaryAppBarStyle
+                                      : bottomSheetText,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -22,6 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late double sound;
   late bool vibration;
   late bool dayOff;
+  bool CalendorEvent = false;
   bool isLightInitialized = false; // Flag to check initialization
   AlarmMethods alarms = AlarmMethods();
   late final Box<AlarmModel> box;
@@ -231,6 +232,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       activeColor: settingSwitch,
                       inactiveTrackColor:
                           theme ? Color(0xFF131313) : Colors.white,
+                      activeTrackColor: settingSwitch,
                       trackOutlineWidth: MaterialStateProperty.all(0.7),
                       trackOutlineColor:
                           MaterialStateProperty.all(settingSwitch),
@@ -279,11 +281,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-                  SwitchState(
+                  Switch(
+                    value: CalendorEvent,
+                    onChanged: (value) {
+                      setState(() {
+                        CalendorEvent = value;
+                      });
+                    },
+                    activeTrackColor: settingSwitch,
                     activeColor: settingSwitch,
-                    trackOutlineColor: settingSwitch,
-                    thumbColor: (Colors.grey[300])!,
-                    inActiveTrackColor:
+                    trackOutlineWidth: MaterialStateProperty.all(0.7),
+                    trackOutlineColor: MaterialStateProperty.all(settingSwitch),
+                    thumbColor: MaterialStateProperty.all(Colors.grey[300]),
+                    inactiveTrackColor:
                         theme ? Color(0xFF131313) : Colors.white,
                   ),
                 ],
@@ -307,6 +317,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       trackOutlineWidth: MaterialStateProperty.all(0.7),
                       trackOutlineColor:
                           MaterialStateProperty.all(settingSwitch),
+                      activeTrackColor: settingSwitch,
                       thumbColor: MaterialStateProperty.all(Colors.grey[300]),
                       onChanged: isLightInitialized
                           ? (bool value) async {
