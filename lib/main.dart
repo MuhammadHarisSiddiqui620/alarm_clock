@@ -15,20 +15,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(AlarmModelAdapter()); // Register the generated adapter
-  await Hive.openBox<AlarmModel>('alarm-db'); //
+
+  if (!Hive.isBoxOpen('alarm-db')) {
+    var box = await Hive.openBox<AlarmModel>('alarm-db');
+    await box.clear(); // Only clear if successfully opened
+  }
+
   await Alarm.init();
 
   // Retrieve theme value
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLightTheme =
-      prefs.getBool('selected_theme') ?? false; // Default to false if not set
+  bool isLightTheme = prefs.getBool('selected_theme') ?? false;
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
       child: MyApp(),
     ),
-  ); // Pass theme value to MyApp
+  );
 }
 
 class MyApp extends StatelessWidget {

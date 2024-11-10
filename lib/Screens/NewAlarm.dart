@@ -194,37 +194,45 @@ class _NewAlarmState extends State<NewAlarm> {
                         debugPrint('durationValue= ${selectedDurationMinute}');
                         debugPrint('durationValue= ${selectedAlarmHour}');
                         debugPrint('durationValue= ${selectedAlarmMinute}');
+                        final box = Hive.box<AlarmModel>('alarm-db');
+
+                        // Set default values for vibrate and volume
+                        bool defaultVibrate = true;
+                        double defaultVolume = 0.5;
+
+                        if (box.isNotEmpty) {
+                          // If there is at least one alarm, get the last alarm's vibrate and volume values
+                          var lastAlarm = box.values.last;
+                          defaultVibrate = lastAlarm.vibrate;
+                          defaultVolume = lastAlarm.volume;
+
+                          debugPrint(
+                              'Last Alarm vibrate= ${lastAlarm.vibrate}');
+                          debugPrint('Last Alarm volume= ${lastAlarm.volume}');
+                        }
 
                         // Create an AlarmModel object with the input data
                         AlarmModel alarm = AlarmModel(
-                            alarmId: alarmId + 1, // Set to null initially
-                            alarmName:
-                                alarmName.isEmpty ? 'Default Alarm' : alarmName,
-                            alarmHour: selectedAlarmHour,
-                            alarmMinute: selectedAlarmMinute,
-                            durationHour: selectedDurationHour,
-                            durationMinute: selectedDurationMinute,
-                            alarmColor: selectedThemeColor,
-                            alarmDay: widget.selectedDay,
-                            isEnabled: true,
-                            vibrate: true,
-                            volume: 0.5);
-
-                        // Access the 'alarms' box and add the new alarm
-                        final box = Hive.box<AlarmModel>('alarm-db');
-                        for (var alarm in box.values) {
-                          debugPrint(
-                              'New Alarm alarm.vibrate= ${alarm.vibrate}');
-                          debugPrint('New Alarm alarm.volume= ${alarm.volume}');
-                        }
+                          alarmId: alarmId + 1, // Set to null initially
+                          alarmName:
+                              alarmName.isEmpty ? 'Default Alarm' : alarmName,
+                          alarmHour: selectedAlarmHour,
+                          alarmMinute: selectedAlarmMinute,
+                          durationHour: selectedDurationHour,
+                          durationMinute: selectedDurationMinute,
+                          alarmColor: selectedThemeColor,
+                          alarmDay: widget.selectedDay,
+                          isEnabled: true,
+                          vibrate:
+                              defaultVibrate, // Use the determined vibrate value
+                          volume: defaultVolume,
+                        );
 
                         alarmId = await box.add(alarm) + 1;
 
                         alarm.alarmId = alarmId;
                         alarm.save();
-                        alarms.triggerAlarm(alarm);
-
-                        debugPrint('box length= ${box.length}');
+                        alarms.triggerAlarm();
 
                         // Optionally navigate back or show a success message
                         ScaffoldMessenger.of(context).showSnackBar(

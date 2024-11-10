@@ -84,8 +84,8 @@ class _ReusableAlarmState extends State<ReusableAlarm> {
                       debugPrint(
                           'ReusableAlarm onChanged alarm= ${widget.alarm.alarmId} + ${widget.alarm.isEnabled}');
 
-                      // Trigger any additional actions (if needed)
-                      alarms.triggerAlarm(widget.alarm);
+/*                      // Trigger any additional actions (if needed)
+                      alarms.triggerAlarm(widget.alarm);*/
                     });
                   },
                 )

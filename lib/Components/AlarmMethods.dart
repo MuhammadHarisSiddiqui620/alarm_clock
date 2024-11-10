@@ -6,7 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class AlarmMethods {
-  // Helper function to calculate the next alarm DateTime for the selected day
+  List<AlarmModel> alarms = [];
+
+  // Make the broadcast stream static to ensure it's only initialized once
+  static final Stream<void> ringBroadcastStream =
+      Alarm.ringStream.stream.asBroadcastStream();
+
+  AlarmMethods() {
+    // Listen to the broadcast stream once in the constructor
+    ringBroadcastStream.listen((_) async {
+      await onRing();
+    });
+  }
+
+  // This function is called whenever the alarm rings
+  Future<void> onRing() async {
+    await isEnabledChanged();
+  }
+
   DateTime getNextAlarmDateTime(int hour, int minute, String selectedDay) {
     final now = DateTime.now();
     int currentDayIndex = now.weekday;
@@ -45,66 +62,66 @@ class AlarmMethods {
     }
   }
 
-  Future<void> triggerAlarm(AlarmModel alarm) async {
-    debugPrint('triggerAlarm alarmId= ${alarm.alarmId}');
-    debugPrint('triggerAlarm isEnabled= ${alarm.isEnabled}');
+  Future<void> triggerAlarm() async {
+    await loadAlarms();
 
-    if (alarm.isEnabled == false) {
-      Alarm.stop(alarm.alarmId);
-      return;
-    } else {
-      // Pass alarmId as parameter
-      final alarmDateTime = getNextAlarmDateTime(
-          alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
+    for (var alarm in alarms) {
+      debugPrint("AlarmMethods triggerAlarm alarmId= ${alarm.alarmId}");
+      debugPrint("AlarmMethods triggerAlarm alarm= ${alarm.isEnabled}");
+      debugPrint("AlarmMethods triggerAlarm alarms Length= ${alarms.length}");
 
-      // Calculate the alarm duration in seconds.
-      final double totalDurationSeconds =
-          (alarm.durationHour * 60 * 60) + (alarm.durationMinute * 60);
+      if (!alarm.isEnabled) {
+        Alarm.stop(alarm.alarmId);
+        continue;
+      } else {
+        final alarmDateTime = getNextAlarmDateTime(
+            alarm.alarmHour, alarm.alarmMinute, alarm.alarmDay);
 
-      debugPrint("AlarmMethods alarm.volume= ${alarm.volume}");
-      debugPrint("AlarmMethods alarm.vibrate= ${alarm.vibrate}");
+        final double totalDurationSeconds =
+            (alarm.durationHour * 60 * 60) + (alarm.durationMinute * 60);
 
-      final alarmSettings = AlarmSettings(
-        id: alarm.alarmId,
-        fadeDuration: totalDurationSeconds,
-        dateTime: alarmDateTime,
-        assetAudioPath: 'assets/audio1.mp3',
-        volume: alarm.volume,
-        vibrate: alarm.vibrate,
-        loopAudio: false,
-        notificationSettings: NotificationSettings(
-          stopButton: 'Stop',
-          title: 'Alarm',
-          body: 'Alarm set for ${alarm.alarmDay}',
-          icon: 'notification_icon',
-        ),
-        warningNotificationOnKill: Platform.isIOS,
-      );
+        final alarmSettings = AlarmSettings(
+          id: alarm.alarmId,
+          fadeDuration: totalDurationSeconds,
+          dateTime: alarmDateTime,
+          assetAudioPath: 'assets/audio1.mp3',
+          volume: alarm.volume,
+          vibrate: alarm.vibrate,
+          loopAudio: true,
+          notificationSettings: NotificationSettings(
+            stopButton: 'Stop',
+            title: 'Alarm',
+            body: 'Alarm set for ${alarm.alarmDay}',
+            icon: 'notification_icon',
+          ),
+          warningNotificationOnKill: Platform.isIOS,
+        );
 
-      await Alarm.set(alarmSettings: alarmSettings);
-      Alarm.ringStream.stream.listen(
-        (_) => isEnabledChanged(alarm.alarmId),
-      );
-
-      debugPrint('Alarm set for $alarmDateTime');
+        await Alarm.set(alarmSettings: alarmSettings);
+        debugPrint('Alarm set for $alarmDateTime');
+      }
     }
   }
 
-  Future<void> isEnabledChanged(int alarmId) async {
-    // Open the box where alarms are stored
+  Future<void> isEnabledChanged() async {
     final box = Hive.box<AlarmModel>('alarm-db');
 
-    // Iterate through each alarm in the box and print its values
     for (var alarm in box.values) {
-      // Await the future returned by Alarm.isRinging
       bool isRinging = await Alarm.isRinging(alarm.alarmId);
-      debugPrint('ALARM METHODS Alarm ID Ringing: $isRinging');
 
       if (isRinging == true) {
-        // If the alarm is found, update the isEnabled field
         alarm.isEnabled = false;
         await alarm.save();
       }
+    }
+  }
+
+  Future<void> loadAlarms() async {
+    alarms.clear();
+    var box = Hive.box<AlarmModel>('alarm-db');
+
+    for (var alarm in box.values) {
+      alarms.add(alarm);
     }
   }
 }

@@ -21,7 +21,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late double sound;
   late bool vibration;
-  late bool dayOff;
+  bool dayOff = false;
   bool CalendorEvent = false;
   bool isLightInitialized = false; // Flag to check initialization
   AlarmMethods alarms = AlarmMethods();
@@ -34,6 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     box = Hive.box<AlarmModel>('alarm-db');
     getThemeValueFlag();
+    loadDayOffState(); // Load dayOff state from SharedPreferences
 
     // Check if there are any items in the box before accessing index 0
     if (box.isNotEmpty) {
@@ -41,17 +42,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
       vibration = alarm?.vibrate ??
           true; // Set `light` to `alarm.vibrate` or `true` if `vibrate` is null
       sound = alarm?.volume ?? 0.5;
-      dayOff = alarm?.isEnabled == true
-          ? false
-          : true; // Set dayOff to false if isEnabled is true, otherwise true
       isLightInitialized = true;
     } else {
       // Set `light` to a default value if the box is empty
       vibration = true;
       sound = 0.5;
-      dayOff = false;
       isLightInitialized = false;
     }
+  }
+
+  Future<void> setDayOffState(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('dayOff', value);
+  }
+
+  Future<void> loadDayOffState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      dayOff = prefs.getBool('dayOff') ?? false;
+    });
   }
 
   Future<void> setThemeValueFlag(bool theme) async {
@@ -190,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                                     // Trigger alarm for all updated alarms
                                     for (var alarm in updatedSoundAlarms) {
-                                      await alarms.triggerAlarm(alarm);
+                                      await alarms.triggerAlarm();
                                     }
                                   }
                                 : null,
@@ -256,7 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                               // Trigger alarm for all updated alarms
                               for (var alarm in updatedVibrateAlarms) {
-                                await alarms.triggerAlarm(alarm);
+                                await alarms.triggerAlarm();
                               }
                             }
                           : null),
@@ -309,36 +318,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: theme ? secondaryAppBarStyle : appBarStyle,
                   ),
                   Switch(
-                      // This bool value toggles the switch.
-                      value: dayOff,
-                      activeColor: settingSwitch,
-                      inactiveTrackColor:
-                          theme ? Color(0xFF131313) : Colors.white,
-                      trackOutlineWidth: MaterialStateProperty.all(0.7),
-                      trackOutlineColor:
-                          MaterialStateProperty.all(settingSwitch),
-                      activeTrackColor: settingSwitch,
-                      thumbColor: MaterialStateProperty.all(Colors.grey[300]),
-                      onChanged: isLightInitialized
-                          ? (bool value) async {
-                              setState(() {
-                                dayOff = value;
+                    // This bool value toggles the switch.
+                    value: dayOff,
+                    activeColor: settingSwitch,
+                    inactiveTrackColor:
+                        theme ? Color(0xFF131313) : Colors.white,
+                    trackOutlineWidth: MaterialStateProperty.all(0.7),
+                    trackOutlineColor: MaterialStateProperty.all(settingSwitch),
+                    activeTrackColor: settingSwitch,
+                    thumbColor: MaterialStateProperty.all(Colors.grey[300]),
+                    onChanged: isLightInitialized
+                        ? (bool value) async {
+                            setState(() {
+                              dayOff = value;
+                            });
+                            await setDayOffState(value); // Save dayOff state
 
-                                final updatedDayOffAlarms =
-                                    box.values.map((alarm) {
-                                  return alarm
-                                    ..isEnabled = value
-                                        ? false
-                                        : true; // Set isEnabled to false if dayOff is true, otherwise keep its current value
-                                }).toList();
-                                box.addAll(updatedDayOffAlarms);
-                                for (var alarm in updatedDayOffAlarms) {
-                                  Alarm.stop(alarm.alarmId);
-                                  alarms.triggerAlarm(alarm);
-                                }
-                              });
+                            final updatedDayOffAlarms = box.values.map((alarm) {
+                              return alarm..isEnabled = value ? false : true;
+                            }).toList();
+
+                            await box.addAll(updatedDayOffAlarms);
+
+                            for (var alarm in updatedDayOffAlarms) {
+                              if (dayOff) {
+                                Alarm.stop(alarm.alarmId);
+                              } else {
+                                alarms.triggerAlarm();
+                              }
                             }
-                          : null),
+                          }
+                        : null,
+                  ),
                 ],
               ),
             ],
