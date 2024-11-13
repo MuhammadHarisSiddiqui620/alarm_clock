@@ -1,3 +1,4 @@
+import 'package:alarm_clock/Components/ReusableAlarmWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
@@ -24,6 +25,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
   List<AlarmModel> alarms = [];
   // Controller for the ListWheelScrollView
   late FixedExtentScrollController _scrollController;
+
+  bool onTapAlarm = true;
 
   // List of days of the week
   final List<String> daysOfWeek = [
@@ -61,6 +64,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Future<void> _loadAlarms() async {
     var box = Hive.box<AlarmModel>('alarm-db');
     DateTime now = DateTime.now();
+
+    debugPrint("AlarmScreen loadAlarms is called");
 
     setState(() {
       alarms =
@@ -191,8 +196,31 @@ class _AlarmScreenState extends State<AlarmScreen> {
                             itemCount: selectedDayAlarms.length,
                             itemBuilder: (context, index) {
                               final alarm = selectedDayAlarms[index];
-                              return ReusableAlarm(
-                                alarm: alarm,
+                              return GestureDetector(
+                                child: ReusableAlarmWidget(
+                                  alarm: alarm, onTap: onTapAlarm,
+                                  onDelete: _loadAlarms, // Pass the callback
+                                ),
+                                onLongPress: () {
+                                  setState(() {
+                                    onTapAlarm = false;
+                                  });
+                                },
+                                onHorizontalDragEnd: (dragDetail) {
+                                  setState(() {
+                                    if (dragDetail.velocity.pixelsPerSecond.dx <
+                                        1) {
+                                      onTapAlarm = false;
+                                    } else {
+                                      onTapAlarm = false;
+                                    }
+                                  });
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    onTapAlarm = true;
+                                  });
+                                },
                               );
                             },
                             separatorBuilder:

@@ -16,11 +16,7 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AlarmModelAdapter()); // Register the generated adapter
 
-  if (!Hive.isBoxOpen('alarm-db')) {
-    var box = await Hive.openBox<AlarmModel>('alarm-db');
-    await box.clear(); // Only clear if successfully opened
-  }
-
+  await Hive.openBox<AlarmModel>('alarm-db'); //
   await Alarm.init();
 
   // Retrieve theme value

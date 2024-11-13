@@ -82,7 +82,6 @@ class AlarmMethods {
 
         final alarmSettings = AlarmSettings(
           id: alarm.alarmId,
-          fadeDuration: totalDurationSeconds,
           dateTime: alarmDateTime,
           assetAudioPath: 'assets/audio1.mp3',
           volume: alarm.volume,
@@ -118,6 +117,7 @@ class AlarmMethods {
 
   Future<void> loadAlarms() async {
     alarms.clear();
+    await Alarm.stopAll();
     var box = Hive.box<AlarmModel>('alarm-db');
 
     for (var alarm in box.values) {

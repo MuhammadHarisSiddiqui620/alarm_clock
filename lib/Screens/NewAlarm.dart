@@ -60,7 +60,27 @@ class _NewAlarmState extends State<NewAlarm> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: 'New alarm', theme: theme),
+        appBar: AppBar(
+          leading: Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Color(0xFF007AFF),
+                  size: 17,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          title: Text(
+            'New Alarm',
+            style: TextStyle(fontSize: 17),
+          ),
+          centerTitle: true,
+        ),
         body: Column(
           children: [
             Expanded(

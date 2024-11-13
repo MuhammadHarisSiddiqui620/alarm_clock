@@ -11,11 +11,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Center(
-        child: Text(
-          title,
-          style: theme ? secondaryAppBarStyle : appBarStyle,
-        ),
+      centerTitle: true,
+      title: Text(
+        title,
+        style: theme ? secondaryAppBarStyle : appBarStyle,
       ),
       elevation: 0.0, // Optional: Remove the AppBar shadow
     );
