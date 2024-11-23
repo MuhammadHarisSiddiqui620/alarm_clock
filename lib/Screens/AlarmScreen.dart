@@ -67,25 +67,29 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     debugPrint("AlarmScreen loadAlarms is called");
 
-    setState(() {
-      alarms =
-          box.values.where((alarm) => alarm.alarmDay == selectedDay).toList();
+    setState(
+      () {
+        alarms =
+            box.values.where((alarm) => alarm.alarmDay == selectedDay).toList();
 
-      // Sort by time, placing alarms after the current time first
-      alarms.sort((a, b) {
-        int aTime = a.alarmHour * 60 + a.alarmMinute;
-        int bTime = b.alarmHour * 60 + b.alarmMinute;
-        int currentTime = now.hour * 60 + now.minute;
+        // Sort by time, placing alarms after the current time first
+        alarms.sort(
+          (a, b) {
+            int aTime = a.alarmHour * 60 + a.alarmMinute;
+            int bTime = b.alarmHour * 60 + b.alarmMinute;
+            int currentTime = now.hour * 60 + now.minute + 1;
 
-        bool aIsAfterNow = aTime >= currentTime;
-        bool bIsAfterNow = bTime >= currentTime;
+            bool aIsAfterNow = aTime >= currentTime;
+            bool bIsAfterNow = bTime >= currentTime;
 
-        if (aIsAfterNow && !bIsAfterNow) return -1;
-        if (!aIsAfterNow && bIsAfterNow) return 1;
+            if (aIsAfterNow && !bIsAfterNow) return -1;
+            if (!aIsAfterNow && bIsAfterNow) return 1;
 
-        return aTime.compareTo(bTime);
-      });
-    });
+            return aTime.compareTo(bTime);
+          },
+        );
+      },
+    );
   }
 
   Future<void> getThemeValueFlag() async {

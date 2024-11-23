@@ -49,6 +49,16 @@ class _Timeline2 extends StatelessWidget {
           _TimelineStatus.done, // Assuming all alarms are done for this example
     );
 
+    // Sort alarms by hour and minute
+    alarms.sort(
+      (a, b) {
+        int aTimeInMinutes = a.alarmHour * 60 + a.alarmMinute;
+        int bTimeInMinutes = b.alarmHour * 60 + b.alarmMinute;
+        return aTimeInMinutes.compareTo(bTimeInMinutes); // Ascending order
+      },
+    );
+    alarms.removeWhere((alarm) => alarm.isEnabled == false);
+
     if (alarms.isEmpty) {
       return Expanded(
         child: Column(
@@ -92,42 +102,49 @@ class _Timeline2 extends StatelessWidget {
         ),
       );
     }
-    return Flexible(
-      child: Timeline.tileBuilder(
-        theme: TimelineThemeData(
-          nodePosition: 0,
-          color: Color(0xffc2c5c9),
-          connectorTheme: ConnectorThemeData(
-            thickness: 3.0,
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('00:00', style: weekHeaders),
+          Flexible(
+            child: Timeline.tileBuilder(
+              theme: TimelineThemeData(
+                nodePosition: 0,
+                color: Color(0xffc2c5c9),
+                connectorTheme: ConnectorThemeData(
+                  thickness: 3.0,
+                ),
+              ),
+              builder: TimelineTileBuilder.connected(
+                indicatorBuilder: (context, index) {
+                  return DotIndicator(
+                    size: 8,
+                    color: data[index] == _TimelineStatus.done
+                        ? Color(int.parse(alarms[index].alarmColor))
+                        : null,
+                  );
+                },
+                connectorBuilder: (_, index, connectorType) {
+                  var color;
+                  if (index + 1 < data.length - 1) {
+                    color =
+                        data[index].isInProgress && data[index + 1].isInProgress
+                            ? Color(0xff193fcc)
+                            : null;
+                  }
+                  return DotIndicator(size: 8, color: color);
+                },
+                contentsBuilder: (context, index) {
+                  return _AlarmContents(alarm: alarms[index]);
+                },
+                itemCount: data.length,
+              ),
+            ),
           ),
-        ),
-        builder: TimelineTileBuilder.connected(
-          indicatorBuilder: (context, index) {
-            return DotIndicator(
-              size: 8,
-              color: data[index] == _TimelineStatus.done
-                  ? Color(0xff193fcc)
-                  : null,
-            );
-          },
-          connectorBuilder: (_, index, connectorType) {
-            var color;
-            if (index + 1 < data.length - 1) {
-              color = data[index].isInProgress && data[index + 1].isInProgress
-                  ? Color(0xff193fcc)
-                  : null;
-            }
-            return SolidLineConnector(
-              indent: connectorType == ConnectorType.start ? 0 : 2.0,
-              endIndent: connectorType == ConnectorType.end ? 0 : 2.0,
-              color: color,
-            );
-          },
-          contentsBuilder: (context, index) {
-            return _AlarmContents(alarm: alarms[index]);
-          },
-          itemCount: data.length,
-        ),
+          Text('23:59', style: weekHeaders),
+        ],
       ),
     );
   }
