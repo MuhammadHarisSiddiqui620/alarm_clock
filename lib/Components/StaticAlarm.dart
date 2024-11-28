@@ -43,7 +43,7 @@ class _StaticAlarmState extends State<StaticAlarm> {
 
     return Container(
       constraints: BoxConstraints(
-        minHeight: 105,
+        minHeight: 83,
         minWidth: 361,
       ),
       decoration: BoxDecoration(
@@ -52,7 +52,7 @@ class _StaticAlarmState extends State<StaticAlarm> {
       ),
       child: Padding(
         padding:
-            const EdgeInsets.only(top: 13, left: 22, bottom: 24, right: 20),
+            const EdgeInsets.only(top: 10, left: 22, bottom: 14, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,7 +65,7 @@ class _StaticAlarmState extends State<StaticAlarm> {
             ),
             Row(
               children: [
-                Text(startTimeFormatted, style: dayContainerTimer),
+                Text(startTimeFormatted, style: weekAlarms),
                 SizedBox(width: 10),
                 Container(
                   color: Colors.white, // Set the divider color
@@ -74,7 +74,7 @@ class _StaticAlarmState extends State<StaticAlarm> {
                 ),
                 SizedBox(width: 10),
                 // Display end time
-                Text(endTimeFormatted, style: dayContainerTimer),
+                Text(endTimeFormatted, style: weekAlarms),
               ],
             ),
           ],

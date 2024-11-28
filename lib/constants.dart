@@ -24,6 +24,9 @@ const weekHeaders =
 const dayContainerTimer =
     TextStyle(fontSize: 35, color: Colors.white, fontFamily: 'Roboto');
 
+const weekAlarms =
+    TextStyle(fontSize: 30, color: Colors.white, fontFamily: 'Roboto');
+
 const TextStyle optionStyle =
     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 

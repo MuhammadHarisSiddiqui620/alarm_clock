@@ -43,6 +43,61 @@ class _Timeline2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int freeTime = 0;
+    int firstAlarmTime = 0;
+    int lastAlarmTime = 0;
+    String lastAlarmColor = '';
+    bool lastAlarm = false;
+    String firstAlarmColor = '';
+    bool firstAlarm = false;
+
+    int calculateFirstAlarmTime(AlarmModel alarm) {
+      if (alarm.alarmHour > 10) {
+        return 7;
+      } else if (alarm.alarmHour > 7) {
+        return 5;
+      } else if (alarm.alarmHour == 0) {
+        firstAlarmColor = alarm.alarmColor;
+        firstAlarm = true;
+        return 0;
+      } else {
+        return 3;
+      }
+    }
+
+    int calculateLastAlarmTime(AlarmModel alarm) {
+      int difference = 23 - alarm.alarmHour;
+      if (difference > 10) {
+        return 7;
+      } else if (difference > 7) {
+        return 5;
+      } else if (difference == 0) {
+        lastAlarmColor = alarm.alarmColor;
+        lastAlarm = true;
+        return 0;
+      } else {
+        return 3;
+      }
+    }
+
+    int calculateFreeTime(int previousAlarmHour, int currentAlarmHour) {
+      int timeDifference = (previousAlarmHour - currentAlarmHour).abs();
+      if (timeDifference > 10) {
+        return 5;
+      } else if (timeDifference > 5) {
+        return 3;
+      } else if (timeDifference > 0) {
+        return 2;
+      } else {
+        return 0;
+      }
+    }
+
+    debugPrint("_Timeline2 lastAlarm = $lastAlarm");
+    debugPrint("_Timeline2 lastAlarmColor = $lastAlarmColor");
+    debugPrint("_Timeline2 firstAlarm = $firstAlarm");
+    debugPrint("_Timeline2 firstAlarmColor = $firstAlarmColor");
+
     List<_TimelineStatus> data = List.generate(
       alarms.length,
       (index) =>
@@ -104,46 +159,136 @@ class _Timeline2 extends StatelessWidget {
     }
 
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
         children: [
-          Text('00:00', style: weekHeaders),
-          Flexible(
-            child: Timeline.tileBuilder(
-              theme: TimelineThemeData(
-                nodePosition: 0,
-                color: Color(0xffc2c5c9),
-                connectorTheme: ConnectorThemeData(
-                  thickness: 3.0,
-                ),
-              ),
-              builder: TimelineTileBuilder.connected(
-                indicatorBuilder: (context, index) {
-                  return DotIndicator(
-                    size: 8,
-                    color: data[index] == _TimelineStatus.done
-                        ? Color(int.parse(alarms[index].alarmColor))
-                        : null,
-                  );
-                },
-                connectorBuilder: (_, index, connectorType) {
-                  var color;
-                  if (index + 1 < data.length - 1) {
-                    color =
-                        data[index].isInProgress && data[index + 1].isInProgress
-                            ? Color(0xff193fcc)
-                            : null;
-                  }
-                  return DotIndicator(size: 8, color: color);
-                },
-                contentsBuilder: (context, index) {
-                  return _AlarmContents(alarm: alarms[index]);
-                },
-                itemCount: data.length,
-              ),
-            ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: alarms.length,
+            itemBuilder: (BuildContext context, int position) {
+              DateTime startTime = DateTime(
+                0,
+                0,
+                0,
+                alarms[position].alarmHour,
+                alarms[position].alarmMinute,
+              );
+              Duration duration = Duration(
+                hours: alarms[position].durationHour,
+                minutes: alarms[position].durationMinute,
+              );
+              DateTime endTime = startTime.add(duration);
+
+              String startTimeFormatted =
+                  '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+              String endTimeFormatted =
+                  '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
+
+              int freeTime = 0;
+              int firstAlarmTime = 0;
+              int lastAlarmTime = 0;
+
+              if (position == 0) {
+                firstAlarmTime = calculateFirstAlarmTime(alarms[position]);
+              }
+
+              if (position == alarms.length - 1) {
+                lastAlarmTime = calculateLastAlarmTime(alarms[position]);
+              }
+
+              if (position > 0) {
+                freeTime = calculateFreeTime(
+                  alarms[position - 1].alarmHour,
+                  alarms[position].alarmHour,
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    children: [
+                      firstAlarm ? Text("") : Text('00:00', style: weekHeaders),
+                      if (firstAlarmTime > 0)
+                        Column(
+                          children: List.generate(
+                            firstAlarmTime,
+                            (index) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: DotIndicator(
+                                size: 8,
+                                color: Color(0xffc2c5c9),
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (freeTime > 0)
+                        Column(
+                          children: List.generate(
+                            freeTime,
+                            (index) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: DotIndicator(
+                                size: 8,
+                                color: Color(0xffc2c5c9),
+                              ),
+                            ),
+                          ),
+                        ),
+                      Text(
+                        startTimeFormatted,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(
+                            int.parse(alarms[position].alarmColor),
+                          ),
+                        ),
+                      ),
+                      if (position < alarms.length)
+                        Column(
+                          children: List.generate(
+                            alarms[position].durationHour > 5 ? 10 : 5,
+                            (index) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: DotIndicator(
+                                size: 8,
+                                color: Color(
+                                  int.parse(alarms[position].alarmColor),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      Text(
+                        endTimeFormatted,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(
+                            int.parse(alarms[position].alarmColor),
+                          ),
+                        ),
+                      ),
+                      if (lastAlarmTime > 0)
+                        Column(
+                          children: List.generate(
+                            lastAlarmTime,
+                            (index) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: DotIndicator(
+                                size: 8,
+                                color: Color(0xffc2c5c9),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  Expanded(child: _AlarmContents(alarm: alarms[position])),
+                ],
+              );
+            },
           ),
-          Text('23:59', style: weekHeaders),
+          lastAlarm ? Text("") : Text('23:59', style: weekHeaders),
         ],
       ),
     );
@@ -160,19 +305,10 @@ class _AlarmContents extends StatelessWidget {
     // Debugging: Check the state of alarm.alarmDay
     print("Alarm Day: ${alarm.alarmDay}"); // Check what alarm.alarmDay is
 
-    return alarm.alarmDay.isEmpty
-        ? Container(
-            margin: EdgeInsets.only(left: 10.0),
-            height: 10.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2.0),
-              color: Color(0xffe6e7e9),
-            ),
-          )
-        : Container(
-            margin: EdgeInsets.only(left: 10.0, top: 15, bottom: 15),
-            child: StaticAlarm(alarm: alarm), // Display the individual alarm
-          );
+    return Container(
+      margin: EdgeInsets.only(left: 10.0, top: 15, bottom: 15),
+      child: StaticAlarm(alarm: alarm), // Display the individual alarm
+    );
   }
 }
 
