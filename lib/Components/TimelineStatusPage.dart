@@ -9,8 +9,9 @@ const kTileHeight = 50.0;
 
 class TimelineStatusPage extends StatefulWidget {
   final List<AlarmModel> alarms;
-
-  const TimelineStatusPage({super.key, required this.alarms});
+  final bool theme;
+  const TimelineStatusPage(
+      {super.key, required this.alarms, required this.theme});
 
   @override
   State<TimelineStatusPage> createState() => _TimelineStatusPageState();
@@ -26,7 +27,10 @@ class _TimelineStatusPageState extends State<TimelineStatusPage> {
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
               children: [
-                _Timeline2(alarms: widget.alarms),
+                _Timeline2(
+                  alarms: widget.alarms,
+                  theme: widget.theme,
+                ),
               ],
             ),
           ),
@@ -38,8 +42,10 @@ class _TimelineStatusPageState extends State<TimelineStatusPage> {
 
 class _Timeline2 extends StatelessWidget {
   final List<AlarmModel> alarms;
+  final bool theme;
 
-  const _Timeline2({Key? key, required this.alarms}) : super(key: key);
+  const _Timeline2({Key? key, required this.alarms, required this.theme})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -203,18 +209,18 @@ class _Timeline2 extends StatelessWidget {
                 );
               }
 
-              return Row(
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    children: [
-                      firstAlarm ? Text("") : Text('00:00', style: weekHeaders),
-                      if (firstAlarmTime > 0)
+                  firstAlarm ? Text("") : Text('00:00', style: weekHeaders),
+                  if (firstAlarmTime > 0)
+                    Row(
+                      children: [
                         Column(
                           children: List.generate(
                             firstAlarmTime,
                             (index) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              padding: const EdgeInsets.symmetric(vertical: 7),
                               child: DotIndicator(
                                 size: 8,
                                 color: Color(0xffc2c5c9),
@@ -222,12 +228,16 @@ class _Timeline2 extends StatelessWidget {
                             ),
                           ),
                         ),
-                      if (freeTime > 0)
+                      ],
+                    ),
+                  if (freeTime > 0)
+                    Row(
+                      children: [
                         Column(
                           children: List.generate(
                             freeTime,
                             (index) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              padding: const EdgeInsets.symmetric(vertical: 7),
                               child: DotIndicator(
                                 size: 8,
                                 color: Color(0xffc2c5c9),
@@ -235,30 +245,72 @@ class _Timeline2 extends StatelessWidget {
                             ),
                           ),
                         ),
-                      Text(
-                        startTimeFormatted,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(
-                            int.parse(alarms[position].alarmColor),
+                      ],
+                    ),
+                  theme
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFDCDCDC), // Fill color
+                            border: Border.all(
+                              color: Color(0xFFDCDCDC),
+                            ),
+                            borderRadius: BorderRadius.circular(5),
                           ),
-                        ),
-                      ),
-                      if (position < alarms.length)
-                        Column(
-                          children: List.generate(
-                            alarms[position].durationHour > 5 ? 10 : 5,
-                            (index) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: DotIndicator(
-                                size: 8,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  startTimeFormatted,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(
+                                      int.parse(alarms[position].alarmColor),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            Text(
+                              startTimeFormatted,
+                              style: TextStyle(
+                                fontSize: 12,
                                 color: Color(
                                   int.parse(alarms[position].alarmColor),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          if (position < alarms.length)
+                            ...List.generate(
+                              alarms[position].durationHour > 5 ? 10 : 5,
+                              (index) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 7),
+                                child: DotIndicator(
+                                  size: 8,
+                                  color: Color(
+                                    int.parse(alarms[position].alarmColor),
+                                  ),
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
+                      Expanded(child: _AlarmContents(alarm: alarms[position])),
+                    ],
+                  ),
+                  Column(
+                    children: [
                       Text(
                         endTimeFormatted,
                         style: TextStyle(
@@ -268,12 +320,16 @@ class _Timeline2 extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (lastAlarmTime > 0)
+                    ],
+                  ),
+                  if (lastAlarmTime > 0)
+                    Row(
+                      children: [
                         Column(
                           children: List.generate(
                             lastAlarmTime,
                             (index) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              padding: const EdgeInsets.symmetric(vertical: 7),
                               child: DotIndicator(
                                 size: 8,
                                 color: Color(0xffc2c5c9),
@@ -281,9 +337,8 @@ class _Timeline2 extends StatelessWidget {
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                  Expanded(child: _AlarmContents(alarm: alarms[position])),
+                      ],
+                    ),
                 ],
               );
             },
