@@ -99,6 +99,21 @@ class _Timeline2 extends StatelessWidget {
       }
     }
 
+    bool checkFirstAlarm(AlarmModel alarm) {
+      if (alarm.alarmHour == 0) {
+        return true;
+      } else
+        return false;
+    }
+
+    bool checkLastAlarm(AlarmModel alarm) {
+      int difference = 23 - alarm.alarmHour;
+      if (difference == 0) {
+        return true;
+      } else
+        return false;
+    }
+
     debugPrint("_Timeline2 lastAlarm = $lastAlarm");
     debugPrint("_Timeline2 lastAlarmColor = $lastAlarmColor");
     debugPrint("_Timeline2 firstAlarm = $firstAlarm");
@@ -167,6 +182,8 @@ class _Timeline2 extends StatelessWidget {
     return Expanded(
       child: ListView(
         children: [
+          if (alarms.isNotEmpty && !checkFirstAlarm(alarms.first))
+            Text('00:00', style: weekHeaders),
           ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -212,7 +229,6 @@ class _Timeline2 extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  firstAlarm ? Text("") : Text('00:00', style: weekHeaders),
                   if (firstAlarmTime > 0)
                     Row(
                       children: [
@@ -343,7 +359,8 @@ class _Timeline2 extends StatelessWidget {
               );
             },
           ),
-          lastAlarm ? Text("") : Text('23:59', style: weekHeaders),
+          if (alarms.isNotEmpty && !checkLastAlarm(alarms.last))
+            Text('23:59', style: weekHeaders),
         ],
       ),
     );

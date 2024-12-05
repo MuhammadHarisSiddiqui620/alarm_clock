@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:alarm_clock/Components/TimelineStatusPage.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,7 @@ class _WeekScreenState extends State<WeekScreen> {
     setState(() {
       alarms =
           box.values.where((alarm) => alarm.alarmDay == selectedDay).toList();
+      alarms.removeWhere((alarm) => alarm.isEnabled == false);
 
       // Sort by time, placing alarms after the current time first
       alarms.sort((a, b) {
@@ -93,26 +96,49 @@ class _WeekScreenState extends State<WeekScreen> {
     // Get alarms for the selected day
     List<AlarmModel> selectedDayAlarms = alarms.toList();
 
-    // Calculate total alarm time in minutes
-    int totalAlarmTimeInMinutes = selectedDayAlarms.fold(0,
-        (sum, alarm) => sum + (alarm.durationHour * 60) + alarm.durationMinute);
+    List<List<int>> intervals = alarms.map((alarm) {
+      int start = alarm.alarmHour * 60 + alarm.alarmMinute;
+      int end = start + alarm.durationHour * 60 + alarm.durationMinute;
+      return [start, end];
+    }).toList();
 
-    // Calculate free time in minutes
-    int freeTimeInMinutes =
-        1440 - totalAlarmTimeInMinutes; // 1440 minutes in a day
+    // Sort intervals by start time
+    intervals.sort((a, b) => a[0].compareTo(b[0]));
 
-    // Convert free time back to hours and minutes
+    // Merge overlapping intervals
+    List<List<int>> mergedIntervals = [];
+    for (var interval in intervals) {
+      if (mergedIntervals.isEmpty || mergedIntervals.last[1] < interval[0]) {
+        mergedIntervals.add(interval);
+      } else {
+        // Merge intervals
+        mergedIntervals.last[1] = max(mergedIntervals.last[1], interval[1]);
+      }
+    }
+
+    // Calculate total used time from merged intervals
+    int totalUsedTime = mergedIntervals.fold(
+        0, (sum, interval) => sum + (interval[1] - interval[0]));
+
+    // Calculate free time
+    const int totalMinutesInDay = 1440; // 24 hours * 60 minutes
+    int freeTimeInMinutes = totalMinutesInDay - totalUsedTime;
+
+    // Convert free time to hours and minutes
     int freeTimeHours = freeTimeInMinutes ~/ 60;
     int freeTimeMinutes = freeTimeInMinutes % 60;
-    // Conditional display of free time
+
+    // Generate free time text
     String freeTimeText = '';
     if (freeTimeHours > 0) {
       freeTimeText += '${freeTimeHours}h';
     }
     if (freeTimeMinutes > 0) {
-      if (freeTimeText.isNotEmpty)
-        freeTimeText += ' '; // Add space if hours are also displayed
+      if (freeTimeText.isNotEmpty) freeTimeText += ' ';
       freeTimeText += '${freeTimeMinutes}m';
+    }
+    if (freeTimeMinutes < 1 && freeTimeHours < 1) {
+      freeTimeText += '0h';
     }
 
     return SafeArea(
