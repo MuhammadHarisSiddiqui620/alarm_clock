@@ -228,7 +228,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SizedBox(
                 height: 31,
               ),
-              Row(
+              /*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -273,8 +273,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               SizedBox(
                 height: 31,
-              ),
-              Row(
+              ),*/
+              /*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
@@ -306,7 +306,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         theme ? Color(0xFF131313) : Colors.white,
                   ),
                 ],
-              ),
+              ),*/
               SizedBox(
                 height: 31,
               ),

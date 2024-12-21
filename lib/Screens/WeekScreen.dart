@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:alarm_clock/Components/CustomAppBar.dart';
 import 'package:alarm_clock/Components/TimelineStatusPage.dart';
+import 'package:alarm_clock/Screens/NewTimeline.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -197,7 +198,10 @@ class _WeekScreenState extends State<WeekScreen> {
                       thickness: 1,
                     ),
                     SizedBox(height: 10),
+                    NewTimeline(alarms: selectedDayAlarms,theme: theme)
+/*
                     TimelineStatusPage(alarms: selectedDayAlarms, theme: theme),
+*/
                   ],
                 ),
               ),
@@ -227,11 +231,11 @@ class _WeekScreenState extends State<WeekScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+/*                      Text(
                         DateFormat('d MMMM').format(DateTime.now()),
                         style: theme ? dayContainer : bottomSheetTextheader,
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 15),*/
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

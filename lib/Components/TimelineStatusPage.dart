@@ -10,6 +10,7 @@ const kTileHeight = 50.0;
 class TimelineStatusPage extends StatefulWidget {
   final List<AlarmModel> alarms;
   final bool theme;
+
   const TimelineStatusPage(
       {super.key, required this.alarms, required this.theme});
 
@@ -49,13 +50,76 @@ class _Timeline2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int freeTime = 0;
-    int firstAlarmTime = 0;
-    int lastAlarmTime = 0;
     String lastAlarmColor = '';
     bool lastAlarm = false;
     String firstAlarmColor = '';
     bool firstAlarm = false;
+    bool mergeAlarm = false;
+    bool mergeEndTimeAlarm = false;
+    int mergeAlarmDifference = 0;
+    final List<AlarmModel> mergeDifferentAlarms = [];
+
+    void mergeAlarms() {
+      for (var i = 0; i < alarms.length - 1; i++) {
+        // TO DO
+        if (alarms[i + 1] != null) {
+          var alarm = alarms[i];
+          var nextAlarm = alarms[i + 1];
+
+          DateTime alarmStartTime = DateTime(
+            0,
+            0,
+            0,
+            alarm.alarmHour,
+            alarm.alarmMinute,
+          );
+          Duration alarmDuration = Duration(
+            hours: alarm.durationHour,
+            minutes: alarm.durationMinute,
+          );
+          DateTime alarmEndTime = alarmStartTime.add(alarmDuration);
+
+          DateTime nextAlarmStartTime = DateTime(
+            0,
+            0,
+            0,
+            nextAlarm.alarmHour,
+            nextAlarm.alarmMinute,
+          );
+          Duration nextAlarmDuration = Duration(
+            hours: nextAlarm.durationHour,
+            minutes: nextAlarm.durationMinute,
+          );
+          DateTime nextAlarmEndTime = nextAlarmStartTime.add(nextAlarmDuration);
+          print(
+              "mergeAlarms nextAlarmStartTime.hour: ${nextAlarmStartTime.hour}"); // Check what alarm.alarmDay is
+          print(
+              "mergeAlarms alarmEndTime.hour: ${alarmEndTime.hour}"); // Check what alarm.alarmDay is
+
+          if (nextAlarmStartTime.hour <= alarmEndTime.hour) {
+            print(
+                "mergeAlarms alarmEndTime.hour: ${alarmEndTime.hour}"); // Check what alarm.alarmDay is
+            // Add alarms to mergeDifferentAlarms if not already added
+            if (!mergeDifferentAlarms.contains(alarm)) {
+              mergeDifferentAlarms.add(alarm);
+            }
+            if (!mergeDifferentAlarms.contains(nextAlarm)) {
+              mergeDifferentAlarms.add(nextAlarm);
+            }
+
+            mergeAlarm = true;
+            if (alarmEndTime.hour > nextAlarmEndTime.hour) {
+              mergeAlarmDifference = alarmEndTime.hour - nextAlarmEndTime.hour;
+              mergeEndTimeAlarm = true;
+            } else {
+              mergeEndTimeAlarm = false;
+            }
+          } else {
+            mergeAlarm = false;
+          }
+        }
+      }
+    }
 
     int calculateFirstAlarmTime(AlarmModel alarm) {
       if (alarm.alarmHour > 10) {
@@ -226,6 +290,8 @@ class _Timeline2 extends StatelessWidget {
                 );
               }
 
+              mergeAlarms();
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -302,29 +368,57 @@ class _Timeline2 extends StatelessWidget {
                             ),
                           ],
                         ),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          if (position < alarms.length)
-                            ...List.generate(
-                              alarms[position].durationHour > 5 ? 10 : 5,
-                              (index) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 7),
-                                child: DotIndicator(
-                                  size: 8,
-                                  color: Color(
-                                    int.parse(alarms[position].alarmColor),
-                                  ),
-                                ),
-                              ),
-                            )
-                        ],
-                      ),
-                      Expanded(child: _AlarmContents(alarm: alarms[position])),
-                    ],
-                  ),
+                  mergeAlarm
+                      ? Row(
+                          children: [
+                            Column(
+                              children: [
+                                if (position < alarms.length)
+                                  ...List.generate(
+                                    alarms[position].durationHour > 5 ? 10 : 5,
+                                    (index) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 7),
+                                      child: DotIndicator(
+                                        size: 8,
+                                        color: Color(
+                                          int.parse(
+                                              alarms[position].alarmColor),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            ),
+                            Expanded(
+                                child: _AlarmContents(alarm: alarms[position])),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Column(
+                              children: [
+                                if (position < alarms.length)
+                                  ...List.generate(
+                                    alarms[position].durationHour > 5 ? 10 : 5,
+                                    (index) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 7),
+                                      child: DotIndicator(
+                                        size: 8,
+                                        color: Color(
+                                          int.parse(
+                                              alarms[position].alarmColor),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            ),
+                            Expanded(
+                                child: _AlarmContents(alarm: alarms[position])),
+                          ],
+                        ),
                   Column(
                     children: [
                       Text(
